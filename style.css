@@ -15,35 +15,36 @@ body {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  padding: 10px;
+  padding: 0;
   box-sizing: border-box;
+  width: 100%;
 }
 
 .selector-label {
-  margin-right: 10px;
-  font-size: 1rem;
+  margin-right: 3px;
+  font-size: 0.8rem;
   color: #333;
   font-weight: bold;
 }
 
 .custom-select {
   appearance: none;
-  width: 80px;
-  padding: 10px;
-  border-radius: 8px;
+  width: 60px;
+  padding: 5px;
+  border-radius: 6px;
   background-color: #f3f4f6;
   color: #333;
   border: 2px solid #4a90e2;
-  font-size: 1rem;
+  font-size: 0.8rem;
   cursor: pointer;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
 }
 
 .custom-select:hover {
   background-color: #ffffff;
   border-color: #357ABD;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
 }
 
 .custom-select:focus {

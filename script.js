@@ -1,4 +1,7 @@
 const projectName = "Piano";
+const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+const audioBuffers = {}; // 音声ファイルをキャッシュするためのオブジェクト
+const activeSources = {}; // 再生中の音を保持するオブジェクト
 const noteCharList = ["A", "As", "B", "C", "Cs", "D", "Ds", "E", "F", "Fs", "G", "Gs"];
 const baseNote = {
   "C": 0,
@@ -14,6 +17,30 @@ const baseNote = {
   "As": 10,
   "B": 11
 };
+
+const audioFiles = "";
+
+// 音声ファイルを事前にロードする関数
+function loadAudio(notePitch) {
+  // const audioPath = `${window.location.origin}/${projectName}/audio/${notePitch}.mp3`
+  const audioPath = `./audio/${notePitch}.mp3`
+  return fetch(audioPath)
+    .then(response => response.arrayBuffer())
+    .then(buffer => audioContext.decodeAudioData(buffer))
+    .then(decodedData => {
+      audioBuffers[notePitch] = decodedData;
+    })
+    .catch(error => {
+      console.error(`Failed to load ${notePitch}.mp3:`, error);
+    });
+}
+for (let i = 1; i <= 3; i++) {
+  noteCharList.forEach(note => {
+    const notePitch = `${note}${i}`;
+    loadAudio(notePitch);
+  });
+}
+
 
 const pianoContainer = document.querySelector("#piano-container");
 const pianoBackground = document.querySelector('#piano-background');
@@ -125,58 +152,57 @@ function createKeys(numberOfKeys) {
 
 let currentAudio = null; // 再生中の音声を保持する変数
 
+// function playNoteAudio(notePitch) {
+//   const audio = audioFiles[notePitch];
+//   if (audio) {
+//     audio.currentTime = 0; // 再生位置をリセット
+//     audio.play().catch(error => {
+//       if (error.name !== "AbortError") {
+//         console.error("Audio playback failed:", error);
+//       }
+//     });
+//   }
+// }
 function playNoteAudio(notePitch) {
-  const audioPath = `${window.location.origin}/${projectName}/audio/${notePitch}.mp3`;
-  console.log("audioPath", audioPath);
-  // const audioPath = `./audio/${notePitch}.mp3`;
-  currentAudio = new Audio(audioPath);
-  // currentAudio.play();
-  currentAudio.play().catch(error => {
-    console.error("Audio playback failed:", error);
-  });
-}
+  if (!audioBuffers[notePitch]) return; // 音声がまだロードされていない場合はスキップ
 
-function stopNoteAudio() {
-  if (currentAudio) {
-    currentAudio.pause();  // 再生中の音声を停止
-    currentAudio.currentTime = 0;  // 再生位置をリセット
-    currentAudio = null;
+  const source = audioContext.createBufferSource();
+  source.buffer = audioBuffers[notePitch];
+  source.connect(audioContext.destination);
+  source.start(0); // 即座に再生
+  activeSources[notePitch] = source; // 再生中の音を保存しておく
+}
+function stopNoteAudio(notePitch) {
+  if (activeSources[notePitch]) {
+    activeSources[notePitch].stop(); // 再生を停止
+    delete activeSources[notePitch]; // 停止した音を削除
   }
 }
-
-
 function asignSoundsOnKeys() {
   // イベントリスナー内でplayNoteWithSoundを呼び出すように変更
   document.querySelectorAll('.key').forEach(key => {
+    const noteMidiNumber = key.getAttribute('data-note');
+    const notePitch = midiToNote(noteMidiNumber);
     key.addEventListener('mousedown', () => {
-      const noteMidiNumber = key.getAttribute('data-note');
-      const notePitch = midiToNote(noteMidiNumber);
-
       playNoteAudio(notePitch);
       key.classList.add('active');
     });
-
     key.addEventListener('mouseup', () => {
-      stopNoteAudio();
+      stopNoteAudio(notePitch);
       key.classList.remove('active');
     });
-
     key.addEventListener('mouseleave', () => {
-      stopNoteAudio();
+      stopNoteAudio(notePitch);
       key.classList.remove('active');
     });
 
     // タッチデバイス向けのイベント
     key.addEventListener('touchstart', () => {
-      const noteMidiNumber = key.getAttribute('data-note');
-      const notePitch = midiToNote(noteMidiNumber);
-
       playNoteAudio(notePitch);
       key.classList.add('active');
     });
-
     key.addEventListener('touchend', () => {
-      stopNoteAudio();
+      stopNoteAudio(notePitch);
       key.classList.remove('active');
     });
 
