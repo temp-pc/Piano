@@ -117,6 +117,8 @@ function createKeys(numberOfKeys) {
     pianoBackground.appendChild(div);
   }
   pianoBackground.style.width = `${pianoBackgroundWidth}em`;
+
+  asignSoundsOnKeys();  //キーに音を割り当て
 }
 
 
@@ -124,8 +126,13 @@ let currentAudio = null; // 再生中の音声を保持する変数
 
 function playNoteAudio(notePitch) {
   const audioPath = `${window.location.origin}/audio/${notePitch}.mp3`;
+  console.log("audioPath", audioPath);
+  // const audioPath = `./audio/${notePitch}.mp3`;
   currentAudio = new Audio(audioPath);
   currentAudio.play();
+  // currentAudio.play().catch(error => {
+  //   console.error("Audio playback failed:", error);
+  // });
 }
 
 function stopNoteAudio() {
@@ -136,53 +143,41 @@ function stopNoteAudio() {
   }
 }
 
-function playNote(note) {
-  const midiNote = parseInt(note); // noteがMIDI番号ならそのまま変換
 
-  // Note On メッセージの作成 (チャンネル1, 音の高さ, ベロシティ)
-  const noteOnMessage = [0x90, midiNote, 127];
-  onMIDIMessage({ data: noteOnMessage });
+function asignSoundsOnKeys() {
+  // イベントリスナー内でplayNoteWithSoundを呼び出すように変更
+  document.querySelectorAll('.key').forEach(key => {
+    key.addEventListener('mousedown', () => {
+      const noteMidiNumber = key.getAttribute('data-note');
+      const notePitch = midiToNote(noteMidiNumber);
 
-  // Note Off メッセージを少し遅らせて実行（例: 500ms後）
-  setTimeout(() => {
-    const noteOffMessage = [0x80, midiNote, 0];
-    onMIDIMessage({ data: noteOffMessage });
-  }, 500);
+      playNoteAudio(notePitch);
+      key.classList.add('active');
+    });
+
+    key.addEventListener('mouseup', () => {
+      stopNoteAudio();
+      key.classList.remove('active');
+    });
+
+    key.addEventListener('mouseleave', () => {
+      stopNoteAudio();
+      key.classList.remove('active');
+    });
+
+    // タッチデバイス向けのイベント
+    key.addEventListener('touchstart', () => {
+      const noteMidiNumber = key.getAttribute('data-note');
+      const notePitch = midiToNote(noteMidiNumber);
+
+      playNoteAudio(notePitch);
+      key.classList.add('active');
+    });
+
+    key.addEventListener('touchend', () => {
+      stopNoteAudio();
+      key.classList.remove('active');
+    });
+
+  });
 }
-
-
-// イベントリスナー内でplayNoteWithSoundを呼び出すように変更
-document.querySelectorAll('.key').forEach(key => {
-  key.addEventListener('mousedown', () => {
-    const noteMidiNumber = key.getAttribute('data-note');
-    const notePitch = midiToNote(noteMidiNumber);
-    
-    playNoteAudio(notePitch);
-    key.classList.add('active');
-  });
-
-  key.addEventListener('mouseup', () => {
-    stopNoteAudio();
-    key.classList.remove('active');
-  });
-
-  key.addEventListener('mouseleave', () => {
-    stopNoteAudio();
-    key.classList.remove('active');
-  });
-
-  // タッチデバイス向けのイベント
-  key.addEventListener('touchstart', () => {
-    const noteMidiNumber = key.getAttribute('data-note');
-    const notePitch = midiToNote(noteMidiNumber);
-
-    playNoteAudio(notePitch);
-    key.classList.add('active');
-  });
-
-  key.addEventListener('touchend', () => {
-    stopNoteAudio();
-    key.classList.remove('active');
-  });
-
-});
