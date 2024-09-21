@@ -34,7 +34,7 @@ function loadAudio(notePitch) {
       console.error(`Failed to load ${notePitch}.mp3:`, error);
     });
 }
-for (let i = 1; i <= 3; i++) {
+for (let i = 1; i <= 5; i++) {
   noteCharList.forEach(note => {
     const notePitch = `${note}${i}`;
     loadAudio(notePitch);
