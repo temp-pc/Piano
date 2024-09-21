@@ -1,3 +1,4 @@
+const projectName = "Piano";
 const noteCharList = ["A", "As", "B", "C", "Cs", "D", "Ds", "E", "F", "Fs", "G", "Gs"];
 const baseNote = {
   "C": 0,
@@ -125,7 +126,7 @@ function createKeys(numberOfKeys) {
 let currentAudio = null; // 再生中の音声を保持する変数
 
 function playNoteAudio(notePitch) {
-  const audioPath = `${window.location.origin}/audio/${notePitch}.mp3`;
+  const audioPath = `${window.location.origin}/${projectName}/audio/${notePitch}.mp3`;
   console.log("audioPath", audioPath);
   // const audioPath = `./audio/${notePitch}.mp3`;
   currentAudio = new Audio(audioPath);
