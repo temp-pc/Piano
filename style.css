@@ -5,10 +5,16 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
+  overflow: hidden;
+  /* 画面をはみ出さないようにする */
 }
 
 * {
   box-sizing: border-box;
+  user-select: none;
+  /* テキスト選択防止 */
+  touch-action: manipulation;
+  /* タッチ操作を快適にする */
 }
 
 .selector-container {
