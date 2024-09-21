@@ -123,7 +123,7 @@ function createKeys(numberOfKeys) {
 let currentAudio = null; // 再生中の音声を保持する変数
 
 function playNoteAudio(notePitch) {
-  const audioPath = `./audio/${notePitch}.mp3`;
+  const audioPath = `${window.location.origin}/audio/${notePitch}.mp3`;
   currentAudio = new Audio(audioPath);
   currentAudio.play();
 }
