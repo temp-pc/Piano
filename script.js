@@ -130,10 +130,10 @@ function playNoteAudio(notePitch) {
   console.log("audioPath", audioPath);
   // const audioPath = `./audio/${notePitch}.mp3`;
   currentAudio = new Audio(audioPath);
-  currentAudio.play();
-  // currentAudio.play().catch(error => {
-  //   console.error("Audio playback failed:", error);
-  // });
+  // currentAudio.play();
+  currentAudio.play().catch(error => {
+    console.error("Audio playback failed:", error);
+  });
 }
 
 function stopNoteAudio() {
