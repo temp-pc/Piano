@@ -40,6 +40,9 @@ function getChordNotes(scale, chordType) {
   return chordPatterns[chordType].map(index => scale[index]);
 }
 
+let CURRENT_SCALE = document.querySelector("#keySelector").value;
+let CURRENT_SCALE_NOTES = getScaleNotes(CURRENT_SCALE);
+
 const audioFiles = "";
 
 // 音声ファイルを事前にロードする関数
@@ -255,19 +258,22 @@ function highlightScale(key) {
 }
 document.querySelectorAll("#chord-buttons button").forEach(button => {
   button.addEventListener("click", () => {
-    const chordType = button.dataset.chord; // 例: "I"
-    const chordNotes = getChordNotes(majorScaleNoteList, chordType);
+    CURRENT_SCALE = document.querySelector("#keySelector").value;
+    CURRENT_SCALE_NOTES = getScaleNotes(CURRENT_SCALE);
 
-    console.log(chordNotes);
+    const chordType = button.dataset.chord; // 例: "I"
+    const chordNotes = getChordNotes(CURRENT_SCALE_NOTES, chordType);
+
+    console.log("chord notes : " + chordNotes);
     // すべてのピアノキーの色をリセット
     document.querySelectorAll(".key").forEach(key => {
       key.classList.remove("chord-highlight");
     });
 
     // 選択されたコードの音をハイライト
-    chordNotes.forEach(noteIndex => {
-      const noteName = noteCharList[noteIndex]; // 例: "C", "E", "G"
-      document.querySelectorAll(`.key[pitch-class="${noteName}"]`).forEach(key => {
+    chordNotes.forEach(pitchClass => {
+      // const noteName = noteCharList[noteIndex]; 
+      document.querySelectorAll(`.key[pitch-class="${pitchClass}"]`).forEach(key => {
         key.classList.add("chord-highlight");
       });
     });
