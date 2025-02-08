@@ -17,6 +17,12 @@ body {
   /* touch-action: manipulation; */
 }
 
+.selectors-wrapper {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
 .selector-container {
   display: flex;
   align-items: center;
@@ -115,10 +121,61 @@ body {
   cursor: pointer;
 }
 
+/* .highlight-key{
+  background-color: #FFFF33;
+}
 
 .active {
   background-color: red;
-  /* ハイライトカラー */
+} */
+
+.highlight-key {
+  background-color: #FFFF80;
+}
+
+.active {
+  background-color: rgba(255, 165, 0, 1); /* オレンジでアクティブ */
+}
+
+.active.highlight-key {
+  background-color: rgba(255, 165, 0, 1); /* より強調されたオレンジ */
+  border: 3px solid #ff4500; /* 赤寄りのオレンジの枠線 */
+  box-shadow: 0px 0px 10px rgba(255, 69, 0, 1); /* グロー効果 */
+}
+.chord-highlight {
+  background-color: rgba(255, 140, 0, 1); /* オレンジ色でハイライト */
+  box-shadow: 0px 0px 10px rgba(255, 140, 0, 1);
+}
+
+#chord-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+#chord-buttons button {
+  font-size: 1.2rem;
+  font-weight: bold;
+  padding: 12px 18px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(145deg, #444, #222);
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+#chord-buttons button:hover {
+  background: linear-gradient(145deg, #555, #333);
+  transform: scale(1.05);
+}
+
+#chord-buttons button.active {
+  background: linear-gradient(145deg, #ff8c00, #ff6a00);
+  box-shadow: 0px 0px 15px rgba(255, 140, 0, 1);
+  color: #222;
+  transform: scale(1.1);
 }
 
 /* @media screen and (max-width: 1000px) {

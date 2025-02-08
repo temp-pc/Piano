@@ -2,6 +2,7 @@ const projectName = "Piano";
 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 const audioBuffers = {}; // 音声ファイルをキャッシュするためのオブジェクト
 const activeSources = {}; // 再生中の音を保持するオブジェクト
+
 const noteCharList = ["A", "As", "B", "C", "Cs", "D", "Ds", "E", "F", "Fs", "G", "Gs"];
 const baseNote = {
   "C": 0,
@@ -17,6 +18,27 @@ const baseNote = {
   "As": 10,
   "B": 11
 };
+const majorScaleNoteList = [ 0, 2, 4, 5, 7, 9, 11 ];
+const minorScaleNoteList = [ 0, 2, 3, 5, 7, 8, 10 ];
+function getScaleNotes(startNote) {
+  const startIndex = noteCharList.indexOf(startNote);
+  if (startIndex === -1) return []; // 指定された音がリストにない場合は空配列を返す
+  const NotesList = majorScaleNoteList.map(interval => noteCharList[(startIndex + interval) % noteCharList.length]);
+  console.log(NotesList);
+  return NotesList;
+}
+const chordPatterns = {
+  "I": [0, 2, 4],
+  "II": [1, 3, 5],
+  "III": [2, 4, 6],
+  "IV": [3, 5, 0],
+  "V": [4, 6, 1], 
+  "VI": [5, 0, 2],
+};
+// 和音の構成音を取得
+function getChordNotes(scale, chordType) {
+  return chordPatterns[chordType].map(index => scale[index]);
+}
 
 const audioFiles = "";
 
@@ -111,6 +133,7 @@ function createKeys(numberOfKeys) {
     const [, noteChar, noteOctave] = match;
 
     div.setAttribute("data-note", noteMidiNumber);
+    div.setAttribute("pitch-class", noteChar);
     div.classList.add("key");
     div.id = notePitch;
 
@@ -208,3 +231,45 @@ function asignSoundsOnKeys() {
 
   });
 }
+
+
+
+document.getElementById("keySelector").addEventListener("change", (event) => {
+  const selectedKey = event.target.value;
+  highlightScale(selectedKey);
+});
+
+function highlightScale(key) {
+  // console.log("scale highligt");
+  const scaleNotes = getScaleNotes(key);
+
+  document.querySelectorAll(".key").forEach((keyElem) => {
+    const note = keyElem.id.match(/^[A-G][s]?/)[0];
+
+    if (scaleNotes.includes(note)) {
+      keyElem.classList.add("highlight-key");
+    } else {
+      keyElem.classList.remove("highlight-key");
+    }
+  });
+}
+document.querySelectorAll("#chord-buttons button").forEach(button => {
+  button.addEventListener("click", () => {
+    const chordType = button.dataset.chord; // 例: "I"
+    const chordNotes = getChordNotes(majorScaleNoteList, chordType);
+
+    console.log(chordNotes);
+    // すべてのピアノキーの色をリセット
+    document.querySelectorAll(".key").forEach(key => {
+      key.classList.remove("chord-highlight");
+    });
+
+    // 選択されたコードの音をハイライト
+    chordNotes.forEach(noteIndex => {
+      const noteName = noteCharList[noteIndex]; // 例: "C", "E", "G"
+      document.querySelectorAll(`.key[pitch-class="${noteName}"]`).forEach(key => {
+        key.classList.add("chord-highlight");
+      });
+    });
+  });
+});

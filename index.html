@@ -8,13 +8,40 @@
 </head>
 
 <body>
+<div class="selectors-wrapper">
   <div class="selector-container">
-    <label for="numberOfKeysSelector" class="selector-label">Keys:</label>
+    <label for="numberOfKeysSelector" class="selector-label">NumberOfKeys:</label>
     <select name="numberOfKeysSelector" id="numberOfKeysSelector" class="custom-select"></select>
   </div>
+  <div class="selector-container">
+    <label for="keySelector" class="selector-label">Scale:</label>
+    <select id="keySelector" class="custom-select">
+      <option value="C">C</option>
+      <option value="Cs">C#</option>
+      <option value="D">D</option>
+      <option value="Ds">D#</option>
+      <option value="E">E</option>
+      <option value="F">F</option>
+      <option value="Fs">F#</option>
+      <option value="G">G</option>
+      <option value="Gs">G#</option>
+      <option value="A">A</option>
+      <option value="As">A#</option>
+      <option value="B">B</option>
+    </select>
+  </div>
+</div>
   <div id="piano-container" class="piano-container">
     <div id="piano-background" class="piano-background"></div>
   </div>
+  <div id="chord-buttons">
+    <button data-chord="I">I</button>
+    <button data-chord="II">II</button>
+    <button data-chord="III">III</button>
+    <button data-chord="IV">IV</button>
+    <button data-chord="V">V</button>
+    <button data-chord="VI">VI</button>
+  </div>  
   <script src="script.js"></script>
 </body>
 
