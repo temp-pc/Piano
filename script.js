@@ -4,37 +4,30 @@ const audioBuffers = {}; // 音声ファイルをキャッシュするための�
 const activeSources = {}; // 再生中の音を保持するオブジェクト
 
 const noteCharList = ["A", "As", "B", "C", "Cs", "D", "Ds", "E", "F", "Fs", "G", "Gs"];
-const baseNote = {
-  "C": 0,
-  "Cs": 1,
-  "D": 2,
-  "Ds": 3,
-  "E": 4,
-  "F": 5,
-  "Fs": 6,
-  "G": 7,
-  "Gs": 8,
-  "A": 9,
-  "As": 10,
-  "B": 11
+const baseNote = { "C": 0, "Cs": 1, "D": 2, "Ds": 3, "E": 4, "F": 5, "Fs": 6, "G": 7, "Gs": 8, "A": 9, "As": 10, "B": 11 };
+const majorScaleNoteList = [0, 2, 4, 5, 7, 9, 11];
+const minorScaleNoteList = [0, 2, 3, 5, 7, 8, 10];
+const chordPatterns = { 
+  "I": [0, 2, 4], 
+  "IIm": [1, 3, 5], 
+  "IIIm": [2, 4, 6], 
+  "IV": [3, 5, 0], 
+  "V": [4, 6, 1], 
+  "VIm": [6, 1, 3], 
+  "Im": [0, 2, 4], 
+  "IIm": [1, 3, 5], 
+  "IIIm": [2, 4, 6], 
+  "IV": [3, 5, 0], 
+  "V": [4, 6, 1], 
 };
-const majorScaleNoteList = [ 0, 2, 4, 5, 7, 9, 11 ];
-const minorScaleNoteList = [ 0, 2, 3, 5, 7, 8, 10 ];
+
+
 function getScaleNotes(startNote) {
   const startIndex = noteCharList.indexOf(startNote);
-  if (startIndex === -1) return []; // 指定された音がリストにない場合は空配列を返す
-  const NotesList = majorScaleNoteList.map(interval => noteCharList[(startIndex + interval) % noteCharList.length]);
+  const NotesList = startIndex === -1 ? [] : majorScaleNoteList.map(i => noteCharList[(startIndex + i) % noteCharList.length]);
   console.log(NotesList);
   return NotesList;
 }
-const chordPatterns = {
-  "I": [0, 2, 4],
-  "II": [1, 3, 5],
-  "III": [2, 4, 6],
-  "IV": [3, 5, 0],
-  "V": [4, 6, 1], 
-  "VI": [5, 0, 2],
-};
 // 和音の構成音を取得
 function getChordNotes(scale, chordType) {
   return chordPatterns[chordType].map(index => scale[index]);
@@ -42,6 +35,7 @@ function getChordNotes(scale, chordType) {
 
 let CURRENT_SCALE = document.querySelector("#keySelector").value;
 let CURRENT_SCALE_NOTES = getScaleNotes(CURRENT_SCALE);
+let CURRENT_CHORD = null;
 
 const audioFiles = "";
 
@@ -59,12 +53,7 @@ function loadAudio(notePitch) {
       console.error(`Failed to load ${notePitch}.mp3:`, error);
     });
 }
-for (let i = 1; i <= 5; i++) {
-  noteCharList.forEach(note => {
-    const notePitch = `${note}${i}`;
-    loadAudio(notePitch);
-  });
-}
+noteCharList.forEach(note => Array.from({ length: 5 }, (_, i) => loadAudio(`${note}${i + 1}`)));
 
 
 const pianoContainer = document.querySelector("#piano-container");
@@ -76,11 +65,7 @@ for (let i = 1; i <= 88; i++) {
   option.textContent = i;
   numberOfKeysSelector.appendChild(option);
 }
-numberOfKeysSelector.addEventListener("change", (event) => {
-  const selectedValue = parseInt(event.target.value);
-  createKeys(selectedValue);
-})
-
+numberOfKeysSelector.addEventListener("change", e => createKeys(parseInt(e.target.value)));
 
 let octaveShiftStatus = 0;
 const initialNumberOfKeys = 24;
@@ -115,15 +100,11 @@ createKeys(initialNumberOfKeys);
 function createKeys(numberOfKeys) {
   pianoBackground.innerHTML = ''; //初期化
 
-  // const whiteKeyWidth = 3.2; // 単位はem
   const whiteKeyWidth = numberOfKeys <= 36 ? 3.2 : numberOfKeys <= 60 ? 2.6 : 2.0;
-  // const whiteKeyWidth = 80 / numberOfKeys ; // 単位はem
-  // const whiteKeyWidthWithBorder = whiteKeyWidth + 0.01;
   const blackKeyWidth = whiteKeyWidth * 0.6;
   const blackKeyWidthhalf = blackKeyWidth / 2;
   const GapOfBlackKey = whiteKeyWidth / 20; //黒鍵の位置を真ん中から少しずらす
   const firstNotePitch = numberOfKeys <= 12 ? "C4" : numberOfKeys <= 24 ? "C3" : numberOfKeys <= 49 ? "C2" : "C1";
-  // const firstNotePitch = "C4";
   const firstNoteMidiNumber = noteToMidi(firstNotePitch);
   let whiteKeyCount = 0;
   let pianoBackgroundWidth = 0;
@@ -168,7 +149,9 @@ function createKeys(numberOfKeys) {
       pianoBackgroundWidth += whiteKeyWidth;
     }
 
+    div.appendChild(Object.assign(document.createElement("div"), { className: "chord-marker" }));
     pianoBackground.appendChild(div);
+
   }
   pianoBackground.style.width = `${pianoBackgroundWidth}em`;
 
@@ -178,17 +161,6 @@ function createKeys(numberOfKeys) {
 
 let currentAudio = null; // 再生中の音声を保持する変数
 
-// function playNoteAudio(notePitch) {
-//   const audio = audioFiles[notePitch];
-//   if (audio) {
-//     audio.currentTime = 0; // 再生位置をリセット
-//     audio.play().catch(error => {
-//       if (error.name !== "AbortError") {
-//         console.error("Audio playback failed:", error);
-//       }
-//     });
-//   }
-// }
 function playNoteAudio(notePitch) {
   if (!audioBuffers[notePitch]) return; // 音声がまだロードされていない場合はスキップ
 
@@ -237,45 +209,72 @@ function asignSoundsOnKeys() {
 
 
 
+highlightScale(CURRENT_SCALE);
+
 document.getElementById("keySelector").addEventListener("change", (event) => {
   const selectedKey = event.target.value;
+  CURRENT_SCALE = selectedKey;
   highlightScale(selectedKey);
+  highlightChord();
 });
 
 function highlightScale(key) {
   // console.log("scale highligt");
   const scaleNotes = getScaleNotes(key);
+  console.log("scaleNotes : " + scaleNotes);
 
   document.querySelectorAll(".key").forEach((keyElem) => {
-    const note = keyElem.id.match(/^[A-G][s]?/)[0];
+    const note = keyElem.getAttribute("pitch-class");
 
     if (scaleNotes.includes(note)) {
       keyElem.classList.add("highlight-key");
     } else {
       keyElem.classList.remove("highlight-key");
     }
+    console.log("note : " + note + ", current scale : " + CURRENT_SCALE);
+    if (note == CURRENT_SCALE) {
+      keyElem.classList.add("root-note");
+    } else {
+      keyElem.classList.remove("root-note");
+    }
   });
 }
-document.querySelectorAll("#chord-buttons button").forEach(button => {
+
+
+const ChordButtonElements = document.querySelectorAll("#chord-buttons button");
+
+ChordButtonElements.forEach(button => {
   button.addEventListener("click", () => {
-    CURRENT_SCALE = document.querySelector("#keySelector").value;
-    CURRENT_SCALE_NOTES = getScaleNotes(CURRENT_SCALE);
-
-    const chordType = button.dataset.chord; // 例: "I"
-    const chordNotes = getChordNotes(CURRENT_SCALE_NOTES, chordType);
-
-    console.log("chord notes : " + chordNotes);
-    // すべてのピアノキーの色をリセット
-    document.querySelectorAll(".key").forEach(key => {
-      key.classList.remove("chord-highlight");
-    });
-
-    // 選択されたコードの音をハイライト
-    chordNotes.forEach(pitchClass => {
-      // const noteName = noteCharList[noteIndex]; 
-      document.querySelectorAll(`.key[pitch-class="${pitchClass}"]`).forEach(key => {
-        key.classList.add("chord-highlight");
-      });
-    });
+    CURRENT_CHORD = button.dataset.chord;
+    highlightChord();
   });
 });
+
+function highlightChord() {
+  CURRENT_SCALE = document.querySelector("#keySelector").value;
+  CURRENT_SCALE_NOTES = getScaleNotes(CURRENT_SCALE);
+
+  const chordNotes = getChordNotes(CURRENT_SCALE_NOTES, CURRENT_CHORD);
+
+  console.log("chord notes : " + chordNotes + " chordType : " + CURRENT_CHORD);
+  // すべてのピアノキーの色をリセット
+  document.querySelectorAll(".key").forEach(key => {
+    key.classList.remove("chord-highlight");
+  });
+
+  // 選択されたコードの音をハイライト
+  chordNotes.forEach(pitchClass => {
+    document.querySelectorAll(`.key[pitch-class="${pitchClass}"]`).forEach(key => {
+      key.classList.add("chord-highlight");
+    });
+  });
+
+  ChordButtonElements.forEach(btn => {
+    if (btn.dataset.chord == CURRENT_CHORD) {
+      btn.classList.add("active");
+    } else {
+      btn.classList.remove("active");
+    }
+  });
+
+}

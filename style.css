@@ -130,23 +130,41 @@ body {
 } */
 
 .highlight-key {
-  background-color: #FFFF80;
-  box-shadow: 0px 0px 15px #FFFF80;
+  /* background-color: #F5E1A4; */
+  background-color: #fdffa5;
 }
-
+.key.root-note{
+  background-color: #ffd4a5;
+}
 .active {
-  background-color: rgba(255, 165, 0, 1); /* オレンジでアクティブ */
+  background-color: #9af4ff
 }
 
 .active.highlight-key {
-  background-color: rgba(255, 165, 0, 1); /* より強調されたオレンジ */
-  border: 3px solid #ff4500; /* 赤寄りのオレンジの枠線 */
-  box-shadow: 0px 0px 10px rgba(255, 69, 0, 1); /* グロー効果 */
+  border: 3px solid rgba(255, 165, 0, 1); /* 赤寄りのオレンジの枠線 */
+  box-shadow: 0px 0px 10px rgba(255, 165, 0, 0.5); /* グロー効果 */
 }
-.chord-highlight {
-  background-color: rgba(255, 140, 0, 1); /* オレンジ色でハイライト */
-  box-shadow: 0px 0px 10px rgba(255, 140, 0, 1);
+
+
+.chord-marker {
+  position:relative;
+  top: 80%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  background-color: red;
+  border-radius: 50%;
+  transform: translateX(-50%);
+  display: none; /* 初期状態は非表示 */
 }
+
+.key.chord-highlight .chord-marker {
+  display: block;
+}
+.key.black-key .chord-marker{
+  top: 70%;
+}
+
 
 #chord-buttons {
   display: flex;
@@ -174,7 +192,6 @@ body {
 
 #chord-buttons button.active {
   background: linear-gradient(145deg, #ff8c00, #ff6a00);
-  box-shadow: 0px 0px 15px rgba(255, 140, 0, 1);
   color: #222;
   transform: scale(1.1);
 }
