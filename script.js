@@ -2,6 +2,7 @@ const projectName = "Piano";
 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 const audioBuffers = {}; // 音声ファイルをキャッシュするためのオブジェクト
 const activeSources = {}; // 再生中の音を保持するオブジェクト
+const gainNodes = {}; // GainNode を管理するオブジェクト
 
 const noteCharList = ["A", "As", "B", "C", "Cs", "D", "Ds", "E", "F", "Fs", "G", "Gs"];
 const baseNote = { "C": 0, "Cs": 1, "D": 2, "Ds": 3, "E": 4, "F": 5, "Fs": 6, "G": 7, "Gs": 8, "A": 9, "As": 10, "B": 11 };
@@ -16,10 +17,10 @@ const chordPatterns = {
   "VIm": [9, 0, 4], 
   "VIIdim": [11, 2, 5], 
   "Im": [0, 3, 7], 
-  "II": [2, 6, 9], 
+  "IIdim": [2, 5, 8], 
   "IIIb": [3, 7, 10], 
-  "IVm": [6, 8, 0], 
-  "Vm": [8, 10, 2], 
+  "IVm": [5, 8, 0], 
+  "Vm": [7, 10, 2], 
   "VIb": [8, 0, 3],
   "VIIb": [10, 2, 5],
 };
@@ -153,7 +154,7 @@ function createKeys(numberOfKeys) {
       pianoBackgroundWidth += whiteKeyWidth;
     }
 
-    div.appendChild(Object.assign(document.createElement("div"), { className: "chord-marker" }));
+    div.appendChild(Object.assign(document.createElement("div"), { className: "scale-marker" }));
     pianoBackground.appendChild(div);
 
   }
@@ -170,14 +171,35 @@ function playNoteAudio(notePitch) {
 
   const source = audioContext.createBufferSource();
   source.buffer = audioBuffers[notePitch];
-  source.connect(audioContext.destination);
-  source.start(0); // 即座に再生
+
+  const gainNode = audioContext.createGain();
+  gainNode.gain.setValueAtTime(1, audioContext.currentTime); // 初期音量を1に設定
+
+  source.connect(gainNode);
+  gainNode.connect(audioContext.destination);
+  
+  source.start(); // 即座に再生
   activeSources[notePitch] = source; // 再生中の音を保存しておく
+  gainNodes[notePitch] = gainNode;
+
 }
+
 function stopNoteAudio(notePitch) {
-  if (activeSources[notePitch]) {
-    activeSources[notePitch].stop(); // 再生を停止
-    delete activeSources[notePitch]; // 停止した音を削除
+  if (activeSources[notePitch] && gainNodes[notePitch]) {
+    const gainNode = gainNodes[notePitch];
+    const source = activeSources[notePitch];
+    const fadeOutTime = 0.3; // フェードアウトにかける時間（秒）
+
+    // 音量を現在の値から0へフェードアウト
+    gainNode.gain.setValueAtTime(gainNode.gain.value, audioContext.currentTime);
+    gainNode.gain.linearRampToValueAtTime(0, audioContext.currentTime + fadeOutTime);
+
+    // フェードアウト後に音を停止
+    setTimeout(() => {
+      source.stop();
+      delete activeSources[notePitch];
+      delete gainNodes[notePitch];
+    }, fadeOutTime * 1000);
   }
 }
 function asignSoundsOnKeys() {
@@ -210,6 +232,39 @@ function asignSoundsOnKeys() {
 
   });
 }
+if (navigator.requestMIDIAccess) {
+  navigator.requestMIDIAccess()
+    .then(onMIDISuccess, onMIDIFailure);
+} else {
+  console.log("WebMIDI is not supported in this browser.");
+}
+
+function onMIDISuccess(midiAccess) {
+  midiAccess.inputs.forEach(function (input) {
+    input.onmidimessage = onMIDIMessage;
+  });
+}
+
+function onMIDIFailure() {
+  console.log("Failed to access MIDI devices.");
+}
+
+function onMIDIMessage(message) {
+  const [status, note, velocity] = message.data;
+  const isNoteOn = (status & 0xf0) === 0x90;
+  const isNoteOff = (status & 0xf0) === 0x80 || (isNoteOn && velocity === 0);
+  const key = document.querySelector(`.key[data-note="${note}"]`);
+
+  const notePitchSymbol = midiToNote(note);
+
+  if (isNoteOn) {
+    key.classList.add('active');
+    playNoteAudio(notePitchSymbol);
+  } else if (isNoteOff) {
+    key.classList.remove('active');
+    stopNoteAudio(notePitchSymbol);
+  }
+}
 
 
 
@@ -231,9 +286,9 @@ function highlightScale(key) {
     const note = keyElem.getAttribute("pitch-class");
 
     if (scaleNotes.includes(note)) {
-      keyElem.classList.add("highlight-key");
+      keyElem.classList.add("scale-highlight");
     } else {
-      keyElem.classList.remove("highlight-key");
+      keyElem.classList.remove("scale-highlight");
     }
     console.log("note : " + note + ", current scale : " + CURRENT_SCALE);
     if (note == CURRENT_SCALE) {

@@ -37,6 +37,8 @@ body {
   font-size: 0.8rem;
   color: #333;
   font-weight: bold;
+  width: 100%;
+  text-align: right;
 }
 
 .custom-select {
@@ -121,7 +123,7 @@ body {
   cursor: pointer;
 }
 
-/* .highlight-key{
+/* .scale-highlight{
   background-color: #FFFF33;
 }
 
@@ -129,8 +131,7 @@ body {
   background-color: red;
 } */
 
-.highlight-key {
-  /* background-color: #F5E1A4; */
+/* .scale-highlight {
   background-color: #fdffa5;
 }
 .key.tonic-note{
@@ -140,13 +141,13 @@ body {
   background-color: #9af4ff
 }
 
-.active.highlight-key {
-  border: 3px solid rgba(255, 165, 0, 1); /* 赤寄りのオレンジの枠線 */
-  box-shadow: 0px 0px 10px rgba(255, 165, 0, 0.5); /* グロー効果 */
-}
+.active.scale-highlight {
+  border: 3px solid rgba(255, 165, 0, 1); 
+  box-shadow: 0px 0px 10px rgba(255, 165, 0, 0.5); 
+} */
 
 
-.chord-marker {
+.scale-marker {
   position:relative;
   top: 80%;
   left: 50%;
@@ -158,14 +159,28 @@ body {
   display: none; /* 初期状態は非表示 */
 }
 
-.key.chord-highlight .chord-marker {
+.key.scale-highlight .scale-marker {
   display: block;
 }
-.key.black-key .chord-marker{
+.key.black-key .scale-marker{
   top: 70%;
 }
-.key.root-note .chord-marker {
+.key.tonic-note .scale-marker {
   background-color: red;
+}
+
+.chord-highlight {
+  background-color: #40FFDF;
+}
+.key.root-note{
+  background-color: #3DB8F5;
+}
+
+.active {
+  box-shadow:
+      inset 0 0 30px #ffcc00,
+      0 0 10px #ffcc00,
+      0 0 10px #ffcc00;
 }
 
 
