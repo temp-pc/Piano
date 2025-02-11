@@ -8,17 +8,20 @@ const baseNote = { "C": 0, "Cs": 1, "D": 2, "Ds": 3, "E": 4, "F": 5, "Fs": 6, "G
 const majorScaleNoteList = [0, 2, 4, 5, 7, 9, 11];
 const minorScaleNoteList = [0, 2, 3, 5, 7, 8, 10];
 const chordPatterns = { 
-  "I": [1, 5, 8], 
-  "IIm": [3, 6, 10], 
-  "IIIm": [5, 8, 12], 
-  "IV": [6, 10, 1], 
-  "V": [8, 12, 3], 
-  "VIm": [10, 0, 5], 
-  "Im": [0, 2, 4], 
-  "IIm": [1, 3, 5], 
-  "IIIm": [2, 4, 6], 
-  "IV": [3, 5, 0], 
-  "V": [4, 6, 1], 
+  "I": [0, 4, 7], 
+  "IIm": [2, 5, 9], 
+  "IIIm": [4, 7, 11], 
+  "IV": [5, 9, 0], 
+  "V": [7, 11, 2], 
+  "VIm": [9, 0, 4], 
+  "VIIdim": [11, 2, 5], 
+  "Im": [0, 3, 7], 
+  "II": [2, 6, 9], 
+  "IIIb": [3, 7, 10], 
+  "IVm": [6, 8, 0], 
+  "Vm": [8, 10, 2], 
+  "VIb": [8, 0, 3],
+  "VIIb": [10, 2, 5],
 };
 
 
@@ -28,14 +31,15 @@ function getScaleNotes(startNote) {
   console.log(NotesList);
   return NotesList;
 }
-// 和音の構成音を取得
 function getChordNotes(scale, chordType) {
-  return chordPatterns[chordType].map(index => noteCharList[index + noteCharList.indexOf(CURRENT_SCALE) - 1]);
+  const startIndex = noteCharList.indexOf(CURRENT_SCALE);
+  const NotesList = chordPatterns[chordType].map(index => noteCharList[(startIndex + index) % noteCharList.length]);
+  return NotesList;
 }
 
 let CURRENT_SCALE = document.querySelector("#keySelector").value;
 let CURRENT_SCALE_NOTES = getScaleNotes(CURRENT_SCALE);
-let CURRENT_CHORD = null;
+let CURRENT_CHORD_DEGREE = null;
 
 const audioFiles = "";
 
@@ -68,7 +72,7 @@ for (let i = 1; i <= 88; i++) {
 numberOfKeysSelector.addEventListener("change", e => createKeys(parseInt(e.target.value)));
 
 let octaveShiftStatus = 0;
-const initialNumberOfKeys = 24;
+const initialNumberOfKeys = 36;
 numberOfKeysSelector.value = initialNumberOfKeys;  //キーボードの鍵盤数の初期値を設定。
 
 const initialFirstNotePitch = "A3";
@@ -233,19 +237,19 @@ function highlightScale(key) {
     }
     console.log("note : " + note + ", current scale : " + CURRENT_SCALE);
     if (note == CURRENT_SCALE) {
-      keyElem.classList.add("root-note");
+      keyElem.classList.add("tonic-note");
     } else {
-      keyElem.classList.remove("root-note");
+      keyElem.classList.remove("tonic-note");
     }
   });
 }
 
 
-const ChordButtonElements = document.querySelectorAll("#chord-buttons button");
+const ChordButtonElements = document.querySelectorAll(".chord-buttons button");
 
 ChordButtonElements.forEach(button => {
   button.addEventListener("click", () => {
-    CURRENT_CHORD = button.dataset.chord;
+    CURRENT_CHORD_DEGREE = button.dataset.chord;
     highlightChord();
   });
 });
@@ -254,23 +258,27 @@ function highlightChord() {
   CURRENT_SCALE = document.querySelector("#keySelector").value;
   CURRENT_SCALE_NOTES = getScaleNotes(CURRENT_SCALE);
 
-  const chordNotes = getChordNotes(CURRENT_SCALE_NOTES, CURRENT_CHORD);
+  const chordNotes = getChordNotes(CURRENT_SCALE_NOTES, CURRENT_CHORD_DEGREE);
 
-  console.log("chord notes : " + chordNotes + " chordType : " + CURRENT_CHORD);
+  console.log("chord notes : " + chordNotes + " chordType : " + CURRENT_CHORD_DEGREE);
   // すべてのピアノキーの色をリセット
   document.querySelectorAll(".key").forEach(key => {
     key.classList.remove("chord-highlight");
+    key.classList.remove("root-note");
   });
 
   // 選択されたコードの音をハイライト
   chordNotes.forEach(pitchClass => {
     document.querySelectorAll(`.key[pitch-class="${pitchClass}"]`).forEach(key => {
       key.classList.add("chord-highlight");
+      if (pitchClass == chordNotes[0]){
+        key.classList.add("root-note");
+      }
     });
   });
 
   ChordButtonElements.forEach(btn => {
-    if (btn.dataset.chord == CURRENT_CHORD) {
+    if (btn.dataset.chord == CURRENT_CHORD_DEGREE) {
       btn.classList.add("active");
     } else {
       btn.classList.remove("active");
