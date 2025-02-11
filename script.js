@@ -8,12 +8,12 @@ const baseNote = { "C": 0, "Cs": 1, "D": 2, "Ds": 3, "E": 4, "F": 5, "Fs": 6, "G
 const majorScaleNoteList = [0, 2, 4, 5, 7, 9, 11];
 const minorScaleNoteList = [0, 2, 3, 5, 7, 8, 10];
 const chordPatterns = { 
-  "I": [0, 2, 4], 
-  "IIm": [1, 3, 5], 
-  "IIIm": [2, 4, 6], 
-  "IV": [3, 5, 0], 
-  "V": [4, 6, 1], 
-  "VIm": [6, 1, 3], 
+  "I": [1, 5, 8], 
+  "IIm": [3, 6, 10], 
+  "IIIm": [5, 8, 12], 
+  "IV": [6, 10, 1], 
+  "V": [8, 12, 3], 
+  "VIm": [10, 0, 5], 
   "Im": [0, 2, 4], 
   "IIm": [1, 3, 5], 
   "IIIm": [2, 4, 6], 
@@ -30,7 +30,7 @@ function getScaleNotes(startNote) {
 }
 // 和音の構成音を取得
 function getChordNotes(scale, chordType) {
-  return chordPatterns[chordType].map(index => scale[index]);
+  return chordPatterns[chordType].map(index => noteCharList[index + noteCharList.indexOf(CURRENT_SCALE) - 1]);
 }
 
 let CURRENT_SCALE = document.querySelector("#keySelector").value;

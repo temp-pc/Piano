@@ -34,8 +34,9 @@
   <div id="piano-container" class="piano-container">
     <div id="piano-background" class="piano-background"></div>
   </div>
-  <div id="chord-buttons">
-    <div class="chord-buttons diatonic-chord">
+  <div id="chord-buttons" class="chord-buttons-wrapper">
+    <div id="diatonicChordButtons" class="chord-buttons diatonic-chord">
+      <label for="diatonicChordButtons" class="chord-button-label">Diatonic Chord:</label>
       <button data-chord="I">I</button>
       <button data-chord="IIm">IIm</button>
       <button data-chord="IIIm">IIIm</button>
@@ -43,12 +44,14 @@
       <button data-chord="V">V</button>
       <button data-chord="VI">VI</button>
     </div>
-    <div class="chord-buttons quality-change">
+    <div id="qualityChangeChordButtons" class="chord-buttons quality-change">
+      <label for="qualityChangeChordButtons" class="chord-button-label">Quality Change:</label>
       <button data-chord="Im">Im</button>
       <button data-chord="II">II</button>
       <button data-chord="III">III</button>
       <button data-chord="IVm">IVm</button>
       <button data-chord="Vm">Vm</button>
+      <button data-chord="VI" style="visibility: hidden;">VI</button>
     </div>
   </div>
   <script src="script.js"></script>
