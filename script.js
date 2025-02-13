@@ -239,6 +239,14 @@ if (navigator.requestMIDIAccess) {
   console.log("WebMIDI is not supported in this browser.");
 }
 
+document.getElementById("midiButton").addEventListener("click", () => {
+  if (navigator.requestMIDIAccess) {
+    navigator.requestMIDIAccess()
+      .then(onMIDISuccess, onMIDIFailure);
+  } else {
+    console.log("WebMIDI is not supported in this browser.");
+  }
+});
 function onMIDISuccess(midiAccess) {
   midiAccess.inputs.forEach(function (input) {
     input.onmidimessage = onMIDIMessage;
