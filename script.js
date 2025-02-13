@@ -8,22 +8,46 @@ const noteCharList = ["A", "As", "B", "C", "Cs", "D", "Ds", "E", "F", "Fs", "G",
 const baseNote = { "C": 0, "Cs": 1, "D": 2, "Ds": 3, "E": 4, "F": 5, "Fs": 6, "G": 7, "Gs": 8, "A": 9, "As": 10, "B": 11 };
 const majorScaleNoteList = [0, 2, 4, 5, 7, 9, 11];
 const minorScaleNoteList = [0, 2, 3, 5, 7, 8, 10];
-const chordPatterns = { 
-  "I": [0, 4, 7], 
-  "IIm": [2, 5, 9], 
-  "IIIm": [4, 7, 11], 
-  "IV": [5, 9, 0], 
-  "V": [7, 11, 2], 
-  "VIm": [9, 0, 4], 
-  "VIIdim": [11, 2, 5], 
-  "Im": [0, 3, 7], 
-  "IIdim": [2, 5, 8], 
-  "IIIb": [3, 7, 10], 
-  "IVm": [5, 8, 0], 
-  "Vm": [7, 10, 2], 
+const chordPatterns = {
+  "I": [0, 4, 7],
+  "IIm": [2, 5, 9],
+  "IIIm": [4, 7, 11],
+  "IV": [5, 9, 0],
+  "V": [7, 11, 2],
+  "VIm": [9, 0, 4],
+  "VIIdim": [11, 2, 5],
+  "Im": [0, 3, 7],
+  "IIdim": [2, 5, 8],
+  "IIIb": [3, 7, 10],
+  "IVm": [5, 8, 0],
+  "Vm": [7, 10, 2],
   "VIb": [8, 0, 3],
   "VIIb": [10, 2, 5],
 };
+
+const mainContainer = document.querySelector("#mainContainer");
+
+const numberOfKeysSelector = document.querySelector("#numberOfKeysSelector");
+let numberOfKeys = 36;
+numberOfKeysSelector.value = numberOfKeys;
+for (let i = 1; i <= 88; i++) {
+  const option = document.createElement("option");
+  option.value = i;
+  option.textContent = i;
+  numberOfKeysSelector.appendChild(option);
+}
+numberOfKeysSelector.addEventListener("change", e => {
+  numberOfKeys = numberOfKeysSelector.value;
+  createKeys(parseInt(e.target.value))
+});
+
+
+
+document.querySelector("#addPianoButton").addEventListener("click", () => {
+  addPiano();
+});
+const pianos = [];
+addPiano();
 
 
 function getScaleNotes(startNote) {
@@ -33,14 +57,15 @@ function getScaleNotes(startNote) {
   return NotesList;
 }
 function getChordNotes(scale, chordType) {
-  const startIndex = noteCharList.indexOf(CURRENT_SCALE);
+  const startIndex = noteCharList.indexOf(scale);
   const NotesList = chordPatterns[chordType].map(index => noteCharList[(startIndex + index) % noteCharList.length]);
   return NotesList;
 }
 
-let CURRENT_SCALE = document.querySelector("#keySelector").value;
-let CURRENT_SCALE_NOTES = getScaleNotes(CURRENT_SCALE);
-let CURRENT_CHORD_DEGREE = null;
+// let CURRENT_SCALE = document.querySelector("#keySelector").value;
+// let CURRENT_SCALE_NOTES = getScaleNotes(CURRENT_SCALE);
+// let CURRENT_CHORD_DEGREE = null;
+
 
 const audioFiles = "";
 
@@ -61,20 +86,97 @@ function loadAudio(notePitch) {
 noteCharList.forEach(note => Array.from({ length: 5 }, (_, i) => loadAudio(`${note}${i + 1}`)));
 
 
-const pianoContainer = document.querySelector("#piano-container");
-const pianoBackground = document.querySelector('#piano-background');
-const numberOfKeysSelector = document.querySelector("#numberOfKeysSelector");
-for (let i = 1; i <= 88; i++) {
-  const option = document.createElement("option");
-  option.value = i;
-  option.textContent = i;
-  numberOfKeysSelector.appendChild(option);
+
+function addPiano() {
+  const pianoId = pianos.length + 1
+  const newPiano = {
+    id: pianoId,  // 新しいIDを自動採番
+    scale: "C",
+    scaleNotes: getScaleNotes("C"),
+    chordDegree: null,
+    chordNotes: null
+  };
+  pianos.push(newPiano);
+  console.log(pianos);
+
+  const pianoInstance = document.createElement("div");
+  pianoInstance.classList.add("piano-instance");
+  pianoInstance.id = `pianoInstance-${pianoId}`;
+
+  pianoInstance.appendChild(document.createElement("hr"));
+
+  const scaleSelector = document.createElement("div");
+  scaleSelector.innerHTML = `
+    <div id="keySelectorContainer-${pianoId}" class="selector-container">
+      <label for="keySelector-${pianoId}" class="selector-label">スケール</label>
+      <select id="keySelector-${pianoId}" class="keySelector custom-select">
+        <option value="C">C</option>
+        <option value="Cs">C#</option>
+        <option value="D">D</option>
+        <option value="Ds">D#</option>
+        <option value="E">E</option>
+        <option value="F">F</option>
+        <option value="Fs">F#</option>
+        <option value="G">G</option>
+        <option value="Gs">G#</option>
+        <option value="A">A</option>
+        <option value="As">A#</option>
+        <option value="B">B</option>
+      </select>
+    </div>
+  `;
+  pianoInstance.appendChild(scaleSelector);
+
+  const pianoContainer = createKeys();
+  pianoInstance.appendChild(pianoContainer);
+
+  // コードボタン
+  const chordButtons = document.createElement("div");
+  chordButtons.innerHTML = `
+<div id="chord-buttons-wrapper" class="chord-wrapper">
+  <div class="chord-group">
+    <label class="chord-label">ダイアトニックコード</label>
+    <div class="chord-buttons diatonic">
+      <button data-chord="I" class="tonic">I</button>
+      <button data-chord="IIm" class="subdominant">IIm</button>
+      <button data-chord="IIIm" class="dominant">IIIm</button>
+      <button data-chord="IV" class="subdominant">IV</button>
+      <button data-chord="V"  class="dominant">V</button>
+      <button data-chord="VIm" class="tonic">VIm</button>
+      <button data-chord="VIIdim" class="diminish">VIIdim</button>
+    </div>
+  </div>
+  <div class="chord-group">
+    <label class="chord-label">パラレルマイナーコード</label>
+    <div class="chord-buttons parallel-minor">
+      <button data-chord="Im" class="tonic">Im</button>
+      <button data-chord="IIdim" class="diminish">IIdim</button>
+      <button data-chord="IIIb" class="tonic">IIIb</button>
+      <button data-chord="IVm" class="subdominant">IVm</button>
+      <button data-chord="Vm" class="dominant">Vm</button>
+      <button data-chord="VIb" class="subdominant">VIb</button>
+      <button data-chord="VIIb" class="dominant">VIIb</button>
+    </div>
+  </div>
+  `;
+  pianoInstance.appendChild(chordButtons);
+
+  // 鍵盤を作る
+  const pianoKeys = document.createElement("div");
+  pianoKeys.classList.add("piano-background");
+  pianoInstance.appendChild(pianoKeys);
+
+  mainContainer.appendChild(pianoInstance);
+  setKeySelection();
+  setChordButton();
 }
-numberOfKeysSelector.addEventListener("change", e => createKeys(parseInt(e.target.value)));
+
+
+
+
 
 let octaveShiftStatus = 0;
-const initialNumberOfKeys = 36;
-numberOfKeysSelector.value = initialNumberOfKeys;  //キーボードの鍵盤数の初期値を設定。
+
 
 const initialFirstNotePitch = "A3";
 
@@ -99,11 +201,13 @@ function midiToNote(midiNumber) {
 }
 
 
-createKeys(initialNumberOfKeys);
 
 
-function createKeys(numberOfKeys) {
-  pianoBackground.innerHTML = ''; //初期化
+
+function createKeys() {
+  const pianoBackground = document.createElement("div");
+  pianoBackground.classList.add("piano-background");
+  // pianoBackground.innerHTML = ''; //初期化
 
   const whiteKeyWidth = numberOfKeys <= 36 ? 3.2 : numberOfKeys <= 60 ? 2.6 : 2.0;
   const blackKeyWidth = whiteKeyWidth * 0.6;
@@ -113,6 +217,8 @@ function createKeys(numberOfKeys) {
   const firstNoteMidiNumber = noteToMidi(firstNotePitch);
   let whiteKeyCount = 0;
   let pianoBackgroundWidth = 0;
+
+  console.log(numberOfKeys)
 
   for (let num = 1; num <= numberOfKeys; num++) {
     const div = document.createElement("div");
@@ -161,6 +267,11 @@ function createKeys(numberOfKeys) {
   pianoBackground.style.width = `${pianoBackgroundWidth}em`;
 
   asignSoundsOnKeys();  //キーに音を割り当て
+
+  const pianoContainer = document.createElement("div");
+  pianoContainer.classList.add("pianoContainer");
+  pianoContainer.appendChild(pianoBackground);
+  return pianoContainer;
 }
 
 
@@ -177,7 +288,7 @@ function playNoteAudio(notePitch) {
 
   source.connect(gainNode);
   gainNode.connect(audioContext.destination);
-  
+
   source.start(); // 即座に再生
   activeSources[notePitch] = source; // 再生中の音を保存しておく
   gainNodes[notePitch] = gainNode;
@@ -239,6 +350,14 @@ if (navigator.requestMIDIAccess) {
   console.log("WebMIDI is not supported in this browser.");
 }
 
+document.getElementById("midiButton").addEventListener("click", () => {
+  if (navigator.requestMIDIAccess) {
+    navigator.requestMIDIAccess()
+      .then(onMIDISuccess, onMIDIFailure);
+  } else {
+    console.log("WebMIDI is not supported in this browser.");
+  }
+});
 function onMIDISuccess(midiAccess) {
   midiAccess.inputs.forEach(function (input) {
     input.onmidimessage = onMIDIMessage;
@@ -268,76 +387,77 @@ function onMIDIMessage(message) {
 
 
 
-highlightScale(CURRENT_SCALE);
-
-document.getElementById("keySelector").addEventListener("change", (event) => {
-  const selectedKey = event.target.value;
-  CURRENT_SCALE = selectedKey;
-  highlightScale(selectedKey);
-  highlightChord();
-});
-
-function highlightScale(key) {
-  // console.log("scale highligt");
-  const scaleNotes = getScaleNotes(key);
-  console.log("scaleNotes : " + scaleNotes);
-
-  document.querySelectorAll(".key").forEach((keyElem) => {
+function highlightScaleAndChord(pianoId) {
+  const pianoInfo = pianos[pianoId - 1];
+  const scale = pianoInfo.scale;
+  const scaleNotes = pianoInfo.scaleNotes || [];;
+  const chordDegree = pianoInfo.chordDegree;
+  const chordNotes = pianoInfo.chordNotes || [];
+  console.log(`piano info : ${JSON.stringify(pianoInfo)}`);
+  document.querySelectorAll(`#pianoInstance-${pianoId} .key`).forEach((keyElem) => {
     const note = keyElem.getAttribute("pitch-class");
 
     if (scaleNotes.includes(note)) {
       keyElem.classList.add("scale-highlight");
+      keyElem.querySelector(".scale-marker").innerText = parseInt(scaleNotes.indexOf(note)) + 1;
     } else {
       keyElem.classList.remove("scale-highlight");
+      keyElem.querySelector(".scale-marker").innerText = "";
     }
-    console.log("note : " + note + ", current scale : " + CURRENT_SCALE);
-    if (note == CURRENT_SCALE) {
+
+    if (note == scale) {
       keyElem.classList.add("tonic-note");
     } else {
       keyElem.classList.remove("tonic-note");
     }
+
+    if (chordNotes.includes(note)) {
+      keyElem.classList.add("chord-highlight");
+    } else {
+      keyElem.classList.remove("chord-highlight");
+    }
+
+    if (note == chordNotes[0]) {
+      keyElem.classList.add("root-note");
+    } else {
+      keyElem.classList.remove("root-note");
+    }
+  });
+}
+
+function setKeySelection(){
+  document.querySelectorAll(".keySelector").forEach(selector => {
+    selector.addEventListener("change", (event) => {
+      const selectedKey = event.target.value;
+      const pianoDiv = event.target.closest("div[id^='pianoInstance-']");
+      const pianoId = pianoDiv.id.replace("pianoInstance-", "");
+      pianos[pianoId - 1].scale = selectedKey;
+      pianos[pianoId - 1].scaleNotes = getScaleNotes(selectedKey);
+
+      highlightScaleAndChord(pianoId);
+    });
   });
 }
 
 
-const ChordButtonElements = document.querySelectorAll(".chord-buttons button");
-
-ChordButtonElements.forEach(button => {
-  button.addEventListener("click", () => {
-    CURRENT_CHORD_DEGREE = button.dataset.chord;
-    highlightChord();
-  });
-});
-
-function highlightChord() {
-  CURRENT_SCALE = document.querySelector("#keySelector").value;
-  CURRENT_SCALE_NOTES = getScaleNotes(CURRENT_SCALE);
-
-  const chordNotes = getChordNotes(CURRENT_SCALE_NOTES, CURRENT_CHORD_DEGREE);
-
-  console.log("chord notes : " + chordNotes + " chordType : " + CURRENT_CHORD_DEGREE);
-  // すべてのピアノキーの色をリセット
-  document.querySelectorAll(".key").forEach(key => {
-    key.classList.remove("chord-highlight");
-    key.classList.remove("root-note");
-  });
-
-  // 選択されたコードの音をハイライト
-  chordNotes.forEach(pitchClass => {
-    document.querySelectorAll(`.key[pitch-class="${pitchClass}"]`).forEach(key => {
-      key.classList.add("chord-highlight");
-      if (pitchClass == chordNotes[0]){
-        key.classList.add("root-note");
-      }
+function setChordButton(){
+  document.querySelectorAll(".chord-buttons button").forEach(button => {
+    button.addEventListener("click", () => {
+      const pianoDiv = button.closest("div[id^='pianoInstance-']");
+      const pianoId = pianoDiv.id.replace("pianoInstance-", "");
+      const chordDegree = button.dataset.chord;
+      console.log("chord degree : " + chordDegree);
+      pianos[pianoId - 1].chordDegree = chordDegree;
+      pianos[pianoId - 1].chordNotes = getChordNotes(pianos[pianoId - 1].scale, chordDegree);
+      highlightScaleAndChord(pianoId);
+      document.querySelectorAll(`#pianoInstance-${pianoId} .chord-buttons button`).forEach(btn => {
+        if (btn.dataset.chord == chordDegree) {
+          btn.classList.add("active");
+        } else {
+          btn.classList.remove("active");
+        }
+      });
     });
-  });
-
-  ChordButtonElements.forEach(btn => {
-    if (btn.dataset.chord == CURRENT_CHORD_DEGREE) {
-      btn.classList.add("active");
-    } else {
-      btn.classList.remove("active");
-    }
   });
 
 }
