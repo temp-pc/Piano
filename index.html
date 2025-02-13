@@ -2,7 +2,8 @@
 <html lang="ja">
 
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" lang="ja" charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" lang="ja"
+    charset="UTF-8">
   <title>Piano</title>
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -15,53 +16,17 @@
       <label for="numberOfKeysSelector" class="selector-label">鍵盤数:</label>
       <select name="numberOfKeysSelector" id="numberOfKeysSelector" class="custom-select"></select>
     </div>
-    <div class="selector-container">
-      <label for="keySelector" class="selector-label">スケール</label>
-      <select id="keySelector" class="custom-select">
-        <option value="C">C</option>
-        <option value="Cs">C#</option>
-        <option value="D">D</option>
-        <option value="Ds">D#</option>
-        <option value="E">E</option>
-        <option value="F">F</option>
-        <option value="Fs">F#</option>
-        <option value="G">G</option>
-        <option value="Gs">G#</option>
-        <option value="A">A</option>
-        <option value="As">A#</option>
-        <option value="B">B</option>
-      </select>
+
+    <div>
+      <button id="addPianoButton">ピアノを追加</button>
+    </div>
+    <div>
+      <button id="midiButton">MIDIに接続</button>
     </div>
   </div>
-  <div id="piano-container" class="piano-container">
-    <div id="piano-background" class="piano-background"></div>
+  <div id="mainContainer">
+
   </div>
-<div id="chord-buttons-wrapper" class="chord-wrapper">
-  <div class="chord-group">
-    <label class="chord-label">ダイアトニックコード</label>
-    <div class="chord-buttons diatonic">
-      <button data-chord="I" class="tonic">I</button>
-      <button data-chord="IIm" class="subdominant">IIm</button>
-      <button data-chord="IIIm" class="dominant">IIIm</button>
-      <button data-chord="IV" class="subdominant">IV</button>
-      <button data-chord="V"  class="dominant">V</button>
-      <button data-chord="VIm" class="tonic">VIm</button>
-      <button data-chord="VIIdim" class="diminish">VIIdim</button>
-    </div>
-  </div>
-  <div class="chord-group">
-    <label class="chord-label">パラレルマイナーコード</label>
-    <div class="chord-buttons parallel-minor">
-      <button data-chord="Im" class="tonic">Im</button>
-      <button data-chord="IIdim" class="diminish">IIdim</button>
-      <button data-chord="IIIb" class="tonic">IIIb</button>
-      <button data-chord="IVm" class="subdominant">IVm</button>
-      <button data-chord="Vm" class="dominant">Vm</button>
-      <button data-chord="VIb" class="subdominant">VIb</button>
-      <button data-chord="VIIb" class="dominant">VIIb</button>
-    </div>
-  </div>
-</div>
   <script src="script.js"></script>
 </body>
 

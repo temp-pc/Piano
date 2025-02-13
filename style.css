@@ -17,7 +17,7 @@ body {
   /* touch-action: manipulation; */
 }
 
-.selectors-wrapper {
+.headerContainer {
   display: flex;
   gap: 20px;
   align-items: center;
@@ -76,7 +76,7 @@ body {
   color: #357ABD;
 }
 
-#numberOfKeysSelector {
+.numberOfKeysSelector {
   margin: 10px 40px 10px 10px;
 }
 
@@ -157,6 +157,8 @@ body {
   border-radius: 50%;
   transform: translateX(-50%);
   display: none; /* 初期状態は非表示 */
+  text-align: center;
+  color: white;
 }
 
 .key.scale-highlight .scale-marker {
