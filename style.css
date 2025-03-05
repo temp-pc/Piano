@@ -3,7 +3,8 @@ body {
   -webkit-user-select: none;
   -webkit-touch-callout: none;
   user-select: none;
-  touch-action: none;
+  /* touch-action: none; */
+  touch-action: auto;
   padding: 0;
   margin: 0;
   display: flex;
