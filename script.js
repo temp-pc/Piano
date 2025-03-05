@@ -47,7 +47,12 @@ for (let i = 1; i <= 88; i++) {
 numberOfKeysSelector.value = numberOfKeys;
 numberOfKeysSelector.addEventListener("change", e => {
   numberOfKeys = numberOfKeysSelector.value;
-  createKeys();
+  document.querySelector("#mainContainer").innerHTML = "";
+  const PianoNumber = pianos.length;
+  pianos.length = 0; //初期化
+  for (let i = 0; i < PianoNumber; i++) {
+    addPiano();
+  }
 });
 
 
@@ -55,7 +60,7 @@ numberOfKeysSelector.addEventListener("change", e => {
 document.querySelector("#addPianoButton").addEventListener("click", () => {
   addPiano();
 });
-const pianos = [];
+let pianos = [];
 addPiano();
 
 
@@ -71,7 +76,7 @@ function getChordNotes(scale, chordType) {
   return NotesList;
 }
 
-// let CURRENT_SCALE = document.querySelector("#keySelector").value;
+// let CURRENT_SCALE = document.querySelector("#scaleSelector").value;
 // let CURRENT_SCALE_NOTES = getScaleNotes(CURRENT_SCALE);
 // let CURRENT_CHORD_DEGREE = null;
 
@@ -116,9 +121,9 @@ function addPiano() {
 
   const scaleSelector = document.createElement("div");
   scaleSelector.innerHTML = `
-    <div id="keySelectorContainer-${pianoId}" class="selector-container">
-      <label for="keySelector-${pianoId}" class="selector-label">スケール</label>
-      <select id="keySelector-${pianoId}" class="keySelector custom-select">
+    <div id="scaleSelectorContainer-${pianoId}" class="selector-container">
+      <label for="scaleSelector-${pianoId}" class="selector-label">スケール</label>
+      <select id="scaleSelector-${pianoId}" class="scaleSelector custom-select">
         <option value="C">C</option>
         <option value="Cs">C#</option>
         <option value="D">D</option>
@@ -217,7 +222,7 @@ function createKeys() {
   const pianoBackground = document.createElement("div");
   pianoBackground.classList.add("piano-background");
   // pianoBackground.innerHTML = ''; //初期化
-  const whiteKeyWidth = 90 / (numberOfKeys / 12 * 7); //単位はvw、画面の横幅の90%を、白鍵の数で割った値
+  const whiteKeyWidth = Math.min(8, 90 / (numberOfKeys / 12 * 7)); //単位はvw、画面の横幅の90%を、白鍵の数で割った値。最大値を8に設定。
   // console.log("whiteKeyWidth : " + whiteKeyWidth + " containerWidth : " + containerWidth + " numberOfKeys : " + numberOfKeys);
   const blackKeyWidth = whiteKeyWidth * 0.6;
   const blackKeyWidthhalf = blackKeyWidth / 2;
@@ -467,7 +472,7 @@ function highlightScaleAndChord(pianoId) {
 }
 
 function setKeySelection() {
-  document.querySelectorAll(".keySelector").forEach(selector => {
+  document.querySelectorAll(".scaleSelector").forEach(selector => {
     selector.addEventListener("change", (event) => {
       const selectedKey = event.target.value;
       const pianoDiv = event.target.closest("div[id^='pianoInstance-']");
@@ -535,3 +540,46 @@ function setChordButton() {
 //     });
 //   });
 // }
+
+
+
+// 画面操作
+
+document.addEventListener("wheel", (event) => {
+  if (event.ctrlKey) { // Ctrlキーが押されている時のみズーム
+    event.preventDefault();
+    const mainContent = document.querySelector("body"); // ズーム対象
+    let scale = Number(mainContent.dataset.scale || 1);
+    scale += event.deltaY * -0.001; // スクロール量に応じて拡大・縮小
+    scale = Math.min(Math.max(0.5, scale), 2); // 0.5〜2倍に制限
+    mainContent.style.transform = `scale(${scale})`;
+    mainContent.dataset.scale = scale;
+  }
+});
+let touchStartDistance = 0;
+let scale = 1;
+
+document.addEventListener("touchstart", (event) => {
+  if (event.touches.length === 2) { // 2本指でのタッチ
+    event.preventDefault();
+    touchStartDistance = getDistance(event.touches);
+  }
+});
+
+document.addEventListener("touchmove", (event) => {
+  if (event.touches.length === 2) { // 2本指での移動
+    event.preventDefault();
+    const newDistance = getDistance(event.touches);
+    const zoomFactor = newDistance / touchStartDistance;
+    touchStartDistance = newDistance;
+    scale *= zoomFactor;
+    scale = Math.min(Math.max(0.5, scale), 3);
+    document.querySelector("#mainContainer").style.transform = `scale(${scale})`;
+  }
+});
+
+function getDistance(touches) {
+  const dx = touches[0].clientX - touches[1].clientX;
+  const dy = touches[0].clientY - touches[1].clientY;
+  return Math.sqrt(dx * dx + dy * dy);
+}
