@@ -1,14 +1,5 @@
 const projectName = "Piano";
 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-// function resumeAudioContext() {
-//   if (audioContext.state !== 'running') {
-//     audioContext.resume().then(() => {
-//       console.log('AudioContext resumed');
-//     });
-//   }
-// }
-// document.addEventListener('mousedown', resumeAudioContext, { once: true });
-// document.addEventListener('touchstart', resumeAudioContext, { once: true });
 const audioBuffers = {}; // 音声ファイルをキャッシュするためのオブジェクト
 const activeSources = {}; // 再生中の音を保持するオブジェクト
 const gainNodes = {}; // GainNode を管理するオブジェクト
@@ -60,6 +51,35 @@ numberOfKeysSelector.addEventListener("change", e => {
 document.querySelector("#addPianoButton").addEventListener("click", () => {
   addPiano();
 });
+
+const pitchShiftValueEle = document.querySelector("#pitch-shift-value");
+let pitchShiftValue = 0;
+pitchShiftValueEle.innerText = pitchShiftValue;
+document.querySelectorAll("button.pitch-shift").forEach(button => {
+  button.addEventListener("click", () => {
+    if (button.classList.contains("up")) {
+      pitchShiftValue += 1;
+      pitchShiftingNumber = 1;
+    } else if (button.classList.contains("down")) {
+      pitchShiftValue -= 1;
+      pitchShiftingNumber = -1
+    }
+    pitchShiftValueEle.innerText = pitchShiftValue;
+
+    console.log("pitch shifted")
+    document.querySelectorAll(".key").forEach(key => {
+      const midiNumber = key.getAttribute("data-note");
+      const newMidiNumber = parseInt(midiNumber) + ( 12 * pitchShiftingNumber);
+      let pitchNote = key.id;
+      const match = pitchNote.match(/^([A-Za-z]{1,2})(\d{1,2})$/);
+      const newPitchNote = `${match[1]}${parseInt(match[2], 10) + pitchShiftingNumber}`
+      key.setAttribute("data-note", newMidiNumber);
+      key.id = newPitchNote;
+    })
+  })
+})
+
+
 let pianos = [];
 addPiano();
 
@@ -97,7 +117,7 @@ function loadAudio(notePitch) {
       console.error(`Failed to load ${notePitch}.mp3:`, error);
     });
 }
-noteCharList.forEach(note => Array.from({ length: 5 }, (_, i) => loadAudio(`${note}${i + 1}`)));
+noteCharList.forEach(note => Array.from({ length: 6 }, (_, i) => loadAudio(`${note}${i + 1}`)));
 
 
 
@@ -182,7 +202,7 @@ function addPiano() {
 
   mainContainer.appendChild(pianoInstance);
   setKeySelection();
-  setChordButton();
+  setChordButton(pianoInstance);
 }
 
 
@@ -227,7 +247,8 @@ function createKeys() {
   const blackKeyWidth = whiteKeyWidth * 0.6;
   const blackKeyWidthhalf = blackKeyWidth / 2;
   const GapOfBlackKey = whiteKeyWidth / 20; //黒鍵の位置を真ん中から少しずらす
-  const firstNotePitch = numberOfKeys <= 12 ? "C4" : numberOfKeys <= 24 ? "C3" : numberOfKeys <= 49 ? "C2" : "C1";
+  const firstNotePitchNumber = numberOfKeys <= 13 ? 4+pitchShiftValue : numberOfKeys <= 49 ? 3+pitchShiftValue : numberOfKeys <= 61 ? 2+pitchShiftValue : 1+pitchShiftValue;
+  const firstNotePitch = `C${firstNotePitchNumber}`;
   const firstNoteMidiNumber = noteToMidi(firstNotePitch);
   let whiteKeyCount = 0;
   let pianoBackgroundWidth = 0;
@@ -486,13 +507,12 @@ function setKeySelection() {
 }
 
 
-function setChordButton() {
-  document.querySelectorAll(".chord-buttons button").forEach(button => {
+function setChordButton(pianoInstance) {
+  pianoInstance.querySelectorAll(".chord-buttons button").forEach(button => {
     button.addEventListener("click", () => {
       const pianoDiv = button.closest("div[id^='pianoInstance-']");
       const pianoId = pianoDiv.id.replace("pianoInstance-", "");
       const chordDegree = button.dataset.chord;
-      console.log("button.classList : " + button.classList);
       if (button.classList.contains("active")) {
         document.querySelectorAll(`#pianoInstance-${pianoId} .chord-buttons button`).forEach(btn => {
           btn.classList.remove("active");
@@ -500,11 +520,9 @@ function setChordButton() {
 
         pianos[pianoId - 1].chordDegree = null;
         pianos[pianoId - 1].chordNotes = null;
-        console.log("Chord reset for pianoInstance-" + pianoId);
       } else {
         pianos[pianoId - 1].chordDegree = chordDegree;
         pianos[pianoId - 1].chordNotes = getChordNotes(pianos[pianoId - 1].scale, chordDegree);
-        console.log("chord degree : " + chordDegree);
 
         // すべてのボタンのactiveを解除してから、押したボタンにactiveをつける
         document.querySelectorAll(`#pianoInstance-${pianoId} .chord-buttons button`).forEach(btn => {
@@ -520,31 +538,8 @@ function setChordButton() {
   });
 }
 
-// function setChordButton(){
-//   document.querySelectorAll(".chord-buttons button").forEach(button => {
-//     button.addEventListener("click", () => {
-//       const pianoDiv = button.closest("div[id^='pianoInstance-']");
-//       const pianoId = pianoDiv.id.replace("pianoInstance-", "");
-//       const chordDegree = button.dataset.chord;
-//       console.log("chord degree : " + chordDegree);
-//       pianos[pianoId - 1].chordDegree = chordDegree;
-//       pianos[pianoId - 1].chordNotes = getChordNotes(pianos[pianoId - 1].scale, chordDegree);
-//       highlightScaleAndChord(pianoId);
-//       document.querySelectorAll(`#pianoInstance-${pianoId} .chord-buttons button`).forEach(btn => {
-//         if (btn.dataset.chord == chordDegree) {
-//           btn.classList.add("active");
-//         } else {
-//           btn.classList.remove("active");
-//         }
-//       });
-//     });
-//   });
-// }
-
-
 
 // 画面操作
-
 document.addEventListener("wheel", (event) => {
   if (event.ctrlKey) { // Ctrlキーが押されている時のみズーム
     event.preventDefault();
