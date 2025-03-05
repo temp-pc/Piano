@@ -9,15 +9,17 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  overflow: hidden;
+  /* overflow: hidden; */
 }
 
 * {
   box-sizing: border-box;
+  /* touch-action: auto;
+  -webkit-overflow-scrolling: touch; */
   /* touch-action: manipulation; */
 }
 
-.headerContainer {
+#headerContainer {
   display: flex;
   gap: 20px;
   align-items: center;
@@ -81,10 +83,8 @@ body {
 }
 
 .piano-container {
+  width: 90vw;
   position: relative;
-  /* transform: translate(-50%, -50%); */
-  /* left: 50%;
-  top: 50%; */
   padding: 2em 1em 1em 1em;
   border-radius: 0.62em;
   background-color: #24272e;
@@ -97,12 +97,15 @@ body {
   padding: 0;
   background-color: #ffffff;
   box-sizing: border-box;
+  margin: 0 auto;
 }
 
 
 .white-key {
   /* width: 4em; */
-  height: 15em;
+  /* height: 15 em;*/
+  height: 15vw;
+  min-height: 100px; 
   background-color: #ffffff;
   border-radius: 0 0 0.3em 0.3em;
   border: 0.1em solid #24272e;
@@ -113,7 +116,8 @@ body {
 
 
 .black-key {
-  height: 9em;
+  /* height: 9 em;*/
+  height: 60%;
   border-radius: 0 0 0.3em 0.3em;
   box-sizing: border-box;
   position: absolute;
@@ -151,8 +155,11 @@ body {
   position:relative;
   top: 80%;
   left: 50%;
-  width: 24px;
-  height: 24px;
+  width: 3vw;
+  height: 3vw;
+  font-size: 2vw;
+  /* width: 24px;
+  height: 24px; */
   background-color: #FBBF00;
   border-radius: 50%;
   transform: translateX(-50%);
@@ -209,8 +216,9 @@ body {
 }
 .chord-label {
   font-size: 0.8rem;
-  width: 10rem;
+  width: 5rem;
   text-align: right;
+  line-height: 1.0;
 }
 .chord-buttons {
   display: flex;
@@ -219,15 +227,19 @@ body {
   gap: 0.5rem;
 }
 .chord-buttons button {
-  font-size: 1rem;
-  width: 4em;
-  padding: 6px 6px;
+  width: 12vw;
+  height: 9vw;
+  font-size: 3.5vw;
+  padding: 0.5em;
+  text-align: center;
   border: none;
   border-radius: 8px;
-  /* background: linear-gradient(145deg, #444, #222); */
   color: #fff;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
+  display: flex;
+  align-items: center;
+  justify-content: center; 
 }
 .chord-buttons.diatonic button.tonic{background-color: #49B656;}
 .chord-buttons.diatonic button.dominant {background-color: #F15031;}
@@ -239,17 +251,21 @@ body {
 .chord-buttons.parallel-minor button.diminish {background-color: #5A189A;}
 
 
+.chord-buttons button:hover {
+  /* background: linear-gradient(145deg, hwb(245 47% 8%), hsl(244, 95%, 60 %));*/
+  color: black;
+  /* background: transparent !important; */
+  border: 2px solid #403f3f;
+  opacity: 0.8;
+  transform: scale(1.1);
+}
 .chord-buttons button.active {
   /* color: #222;
   transform: scale(1.1); */
-  font-size: 1.2rem;
+  font-size: 4vw;
   font-weight: bold;
-  box-shadow: 0px 0px 10px black;
-    transform: scale(1.1);
-}
-.chord-buttons button:hover {
-  background: linear-gradient(145deg, #555, #333);
-  transform: scale(1.05);
+  box-shadow: 0px 0px 0.7em black;
+  transform: scale(1.3);
 }
 
 /* @media screen and (max-width: 1000px) {
