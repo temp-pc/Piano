@@ -169,10 +169,10 @@ hr{
 
 .scale-marker {
   position:relative;
-  top: 80%;
+  top: 70%;
   left: 50%;
-  width: 3vw;
-  height: 3vw;
+  width: 2.8vw;
+  height: 2.8vw;
   font-size: 2vw;
   /* width: 24px;
   height: 24px; */
@@ -188,7 +188,7 @@ hr{
   display: block;
 }
 .key.black-key .scale-marker{
-  top: 70%;
+  top: 60%;
 }
 .key.tonic-note .scale-marker {
   background-color: red;
