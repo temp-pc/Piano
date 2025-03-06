@@ -62,11 +62,6 @@ function getChordNotes(scale, chordType) {
   return NotesList;
 }
 
-// let CURRENT_SCALE = document.querySelector("#keySelector").value;
-// let CURRENT_SCALE_NOTES = getScaleNotes(CURRENT_SCALE);
-// let CURRENT_CHORD_DEGREE = null;
-
-
 const audioFiles = "";
 
 // 音声ファイルを事前にロードする関数
