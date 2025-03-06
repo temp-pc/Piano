@@ -108,9 +108,75 @@ label {
 .numberOfKeysSelector {
   margin: 10px 40px 10px 10px;
 }
-.scaleSelector{
-  margin: 5px 10px;
+.selector-container {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 10px;
+  margin-bottom: 10px;
+  width: 100%;
 }
+
+.selector-label {
+  margin-right: 10px;
+  font-size: 0.8rem;
+  color: #333;
+  font-weight: bold;
+  text-align: right;
+  width: auto;
+}
+
+.scaleSelector {
+  margin: 0;
+  width: 80px;
+}
+
+.chord-wrapper {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 2rem;
+  margin: 20px 0;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.chord-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+  min-width: 300px;
+}
+
+.chord-label {
+  font-size: 0.8rem;
+  text-align: center;
+  margin: 0;
+  width: auto;
+}
+
+.chord-buttons {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.chord-buttons button {
+  width: 8vw;
+  height: 4vw;
+  max-width: 60px;
+  max-height: 35px;
+  font-size: min(2vw, 16px);
+  text-align: center;
+  padding: 0;
+  margin: 0;
+}
+
 hr{
   margin: 1px;
 }

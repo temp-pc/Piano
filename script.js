@@ -100,8 +100,6 @@ document.querySelectorAll("button.pitchShift").forEach(button => {
 
 
 let pianos = [];
-addPiano();
-
 
 function getScaleNotes(startNote) {
   const startIndex = noteCharList.indexOf(startNote);
