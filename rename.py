@@ -2,7 +2,8 @@ import os
 import re
 
 # ファイルが入っているフォルダのパスを指定
-folder_path = './a/'  # ここにフォルダのパスを指定
+# folder_path = './a/'  # ここにフォルダのパスを指定
+folder_path = "/Users/thms/Documents/workspace/programs/Piano/temp/a"
 
 # フォルダ内のファイルを処理
 for filename in os.listdir(folder_path):

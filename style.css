@@ -1,38 +1,180 @@
 html,
 body {
-  -webkit-user-select: none;
-  -webkit-touch-callout: none;
-  user-select: none;
-  touch-action: none;
+  touch-action: auto;
   padding: 0;
   margin: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  overflow: hidden;
+  /* overflow: hidden; */
+  transform-origin:top ;
+  /* transition: transform 0.5s ease-in-out; */
 }
 
-* {
-  box-sizing: border-box;
-  /* touch-action: manipulation; */
-}
 
-.headerContainer {
-  display: flex;
-  gap: 20px;
-  align-items: center;
-}
-
-.selector-container {
+#headerContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: flex-end;
+  gap: 20px;
+  padding: 12px 24px;
+  background-color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  transition: transform 0.3s ease-in-out;
+  box-sizing: border-box;
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  max-width: 100%;
+}
+
+.header-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  flex-shrink: 0;
+}
+
+#volumeControl {
+  position: static;
+  width: 100px;
+}
+
+#pitchShiftWrapper {
+  width: auto;
+}
+
+#pitchShifter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pitchShift {
+  width: 24px;
+  height: 24px;
   padding: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  border-radius: 4px;
+}
+
+#pitchShift-value {
+  min-width: 24px;
+  text-align: center;
+}
+
+.numberOfKeysSelector {
+  margin: 0;
+}
+
+/* ヘッダーが固定されるため、メインコンテンツに上部マージンを追加 */
+#mainContainer {
+  margin-top: 60px;
+  transition: margin-top 0.3s ease-in-out;
+}
+
+#mainContainer.header-hidden {
+  margin-top: 0;
+}
+
+/* ヘッダーの表示/非表示トグルボタン */
+.header-toggle {
+  position: fixed;
+  top: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 24px;
+  height: 12px;
+  background: none !important;
+  border: none;
+  cursor: pointer;
+  z-index: 1001;
+  transition: all 0.3s ease-in-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.6;
+  padding: 0;
+  margin: 0;
+  border-radius: 0;
+}
+
+.header-toggle::before {
+  content: '';
+  width: 0;
+  height: 0;
+  border-left: 12px solid transparent;
+  border-right: 12px solid transparent;
+  border-top: 12px solid #464646;
+  transition: all 0.3s ease-in-out;
+}
+
+.header-toggle:hover {
+  opacity: 1;
+  background: none !important;
+  transform: translateX(-50%);
+}
+
+/* ヘッダーが非表示の時のトグルボタン */
+.header-toggle.hidden {
+  transform: translateX(-50%) rotate(180deg);
+  top: 12px;
+}
+
+.header-toggle.hidden:hover {
+  transform: translateX(-50%) rotate(180deg);
+}
+
+/* ヘッダーが非表示の時のスタイル */
+#headerContainer.hidden {
+  transform: translateY(-100%);
+}
+
+button {
+  background: #007bff;
+  color: white;
+  font-size: 12px;
+  padding: 5px;
+  margin: 1vw;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+button:hover {
+  background: #0056b3;
+}
+button:active {
+  transform: scale(0.95);
+}
+.header.continer{
+  display: flex;
+  vertical-align: center;
+  gap: 12px;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0;
+  margin-bottom: 1vw;
   box-sizing: border-box;
   width: 100%;
 }
-
-.selector-label {
+label {
   margin-right: 3px;
   font-size: 0.8rem;
   color: #333;
@@ -44,7 +186,7 @@ body {
 .custom-select {
   appearance: none;
   width: 60px;
-  padding: 5px;
+  padding: 8px 12px;
   border-radius: 6px;
   background-color: #f3f4f6;
   color: #333;
@@ -54,19 +196,16 @@ body {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
 }
-
 .custom-select:hover {
   background-color: #ffffff;
   border-color: #357ABD;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
 }
-
 .custom-select:focus {
   outline: none;
   border-color: #1C6EA4;
   box-shadow: 0 0 0 3px rgba(70, 130, 180, 0.4);
 }
-
 .custom-select::after {
   content: "▼";
   position: absolute;
@@ -75,19 +214,91 @@ body {
   font-size: 1rem;
   color: #357ABD;
 }
-
-.numberOfKeysSelector {
-  margin: 10px 40px 10px 10px;
+.selector-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  justify-content: flex-end;
+  padding-right: 20px;
 }
 
+.selector-label {
+  margin-right: 10px;
+  font-size: 0.8rem;
+  color: #333;
+  font-weight: bold;
+  text-align: right;
+  width: auto;
+}
+
+.scaleSelector {
+  margin: 0;
+  width: 80px;
+}
+
+.chord-wrapper {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 2rem;
+  margin: 20px 0;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.chord-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+  min-width: 300px;
+}
+
+.chord-label {
+  font-size: 0.8rem;
+  text-align: center;
+  margin: 0;
+  width: auto;
+}
+
+.chord-buttons {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.chord-buttons button {
+  width: 8vw;
+  height: 4vw;
+  max-width: 60px;
+  max-height: 35px;
+  font-size: min(2vw, 16px);
+  text-align: center;
+  padding: 0;
+  margin: 0;
+}
+
+hr{
+  margin: 1px;
+}
+
+
+
 .piano-container {
+  width: 90vw;
   position: relative;
-  /* transform: translate(-50%, -50%); */
-  /* left: 50%;
-  top: 50%; */
   padding: 2em 1em 1em 1em;
   border-radius: 0.62em;
   background-color: #24272e;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  user-select: none;
+  touch-action: none;
 }
 
 .piano-background {
@@ -97,15 +308,18 @@ body {
   padding: 0;
   background-color: #ffffff;
   box-sizing: border-box;
+  margin: 0 auto;
 }
 
 
 .white-key {
   /* width: 4em; */
-  height: 15em;
+  /* height: 15 em;*/
+  height: 15vw;
+  min-height: 100px; 
   background-color: #ffffff;
   border-radius: 0 0 0.3em 0.3em;
-  border: 0.1em solid #24272e;
+  border: 0.06vw solid #24272e;
   box-sizing: border-box;
   cursor: pointer;
   box-shadow: 0 0 0 0.2em #24272e;
@@ -113,46 +327,27 @@ body {
 
 
 .black-key {
-  height: 9em;
+  /* height: 9 em;*/
+  height: 60%;
   border-radius: 0 0 0.3em 0.3em;
   box-sizing: border-box;
   position: absolute;
-  border: 0.2em solid #24272e;
+  border: 0.06vw solid #24272e;
   border-top: none;
   background-color: #070a0f;
   cursor: pointer;
 }
 
-/* .scale-highlight{
-  background-color: #FFFF33;
-}
-
-.active {
-  background-color: red;
-} */
-
-/* .scale-highlight {
-  background-color: #fdffa5;
-}
-.key.tonic-note{
-  background-color: #ffd4a5;
-}
-.active {
-  background-color: #9af4ff
-}
-
-.active.scale-highlight {
-  border: 3px solid rgba(255, 165, 0, 1); 
-  box-shadow: 0px 0px 10px rgba(255, 165, 0, 0.5); 
-} */
-
 
 .scale-marker {
   position:relative;
-  top: 80%;
+  top: 70%;
   left: 50%;
-  width: 24px;
-  height: 24px;
+  width: 2.8vw;
+  height: 2.8vw;
+  font-size: 2vw;
+  /* width: 24px;
+  height: 24px; */
   background-color: #FBBF00;
   border-radius: 50%;
   transform: translateX(-50%);
@@ -165,31 +360,31 @@ body {
   display: block;
 }
 .key.black-key .scale-marker{
-  top: 70%;
+  top: 60%;
 }
 .key.tonic-note .scale-marker {
   background-color: red;
 }
 
 .chord-highlight {
-  background-color: #40FFDF;
+  background-color: #b0cdff;
 }
 .key.root-note{
-  background-color: #3DB8F5;
+  background-color: #005eff;
 }
 
 .active {
   box-shadow:
-      inset 0 0 30px #ffcc00,
-      0 0 10px #ffcc00,
-      0 0 10px #ffcc00;
+      inset 0 0 30px #ffe26c,
+      0 0 10px #ffe26c,
+      0 0 10px #ffe26c;
 }
 
 
 
 .chord-buttons {
   display: flex;
-  gap: 10px;
+  /* gap: 1em; */
 }
 .chord-buttons-wrapper {
   display: block;
@@ -198,36 +393,42 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1rem; /* 各グループの間隔 */
+  gap: 0.5rem; /* 各グループの間隔 */
   margin-top: 20px;
   margin-bottom: 10px;
 }
 .chord-group {
   display: flex;
   align-items: center;  /* ラベルとボタンを横並び＆中央寄せ */
-  gap: 1rem;  /* ラベルとボタンの間隔 */
 }
 .chord-label {
   font-size: 0.8rem;
-  width: 10rem;
   text-align: right;
+  margin-left: 2vw;
+  line-height: 1.0;
 }
 .chord-buttons {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 0.5rem;
+  /* gap: 3vm; */
 }
 .chord-buttons button {
-  font-size: 1rem;
-  width: 4em;
-  padding: 6px 6px;
+  width: 10vw;
+  height: 5vw;
+  max-width: 70px;
+  max-height: 40px;
+  font-size: min(2.5vw, 20px);
+  text-align: center;
   border: none;
   border-radius: 8px;
-  /* background: linear-gradient(145deg, #444, #222); */
+  margin: 5px 8px;
   color: #fff;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
+  display: flex;
+  align-items: center;
+  justify-content: center; 
 }
 .chord-buttons.diatonic button.tonic{background-color: #49B656;}
 .chord-buttons.diatonic button.dominant {background-color: #F15031;}
@@ -239,17 +440,17 @@ body {
 .chord-buttons.parallel-minor button.diminish {background-color: #5A189A;}
 
 
-.chord-buttons button.active {
-  /* color: #222;
-  transform: scale(1.1); */
-  font-size: 1.2rem;
-  font-weight: bold;
-  box-shadow: 0px 0px 10px black;
-    transform: scale(1.1);
-}
 .chord-buttons button:hover {
-  background: linear-gradient(145deg, #555, #333);
-  transform: scale(1.05);
+  color: black;
+  border: 2px solid #403f3f;
+  opacity: 0.8;
+  transform: scale(1.1);
+}
+.chord-buttons button.active {
+  font-weight: bold;
+  box-shadow: 0px 0px 0.7em black;
+  transform: scale(1.3);
+  font-size: min(3vw, 28px);
 }
 
 /* @media screen and (max-width: 1000px) {
@@ -267,3 +468,59 @@ body {
     font-size: 0.3em;
   }
 } */
+
+.highlight-toggle {
+  background: none;
+  border: 1px solid #ccc;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: none;
+}
+
+.highlight-toggle.active {
+  background-color: #4CAF50;
+  border-color: #4CAF50;
+  box-shadow: none;
+}
+
+.highlight-toggle .toggle-icon {
+  font-size: 1.4em;
+  color: #666;
+  line-height: 1;
+}
+
+.highlight-toggle.active .toggle-icon {
+  color: white;
+}
+
+.highlight-toggle:hover {
+  border-color: #4CAF50;
+  box-shadow: none;
+}
+
+#addPianoButton {
+  white-space: nowrap;
+  padding: 6px 12px;
+  font-size: 12px;
+  flex-shrink: 0;
+  margin: 0;
+}
+
+@media screen and (max-width: 768px) {
+  .header-controls {
+    gap: 10px;
+  }
+  
+  .header-group {
+    gap: 4px;
+  }
+  
+  #addPianoButton {
+    padding: 4px 8px;
+  }
+}

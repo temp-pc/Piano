@@ -2,14 +2,16 @@
 <html lang="ja">
 
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" lang="ja"
-    charset="UTF-8">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Piano</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
-  <div class="headerContainer">
+  <button id="midiButton">MIDIを接続</button>
+  <button id="addPianoButton">ピアノを追加</button>
+  <div class="selectors-wrapper">
     <div class="selector-container">
       <label for="numberOfKeysSelector" class="selector-label">鍵盤数:</label>
       <select name="numberOfKeysSelector" id="numberOfKeysSelector" class="custom-select"></select>
@@ -18,14 +20,9 @@
     <div>
       <button id="addPianoButton">ピアノを追加</button>
     </div>
-    <div>
-      <button id="midiButton">MIDIに接続</button>
-    </div>
   </div>
-  <div id="mainContainer">
-
-  </div>
-  <script src="script.js"></script>
+  <div id="mainContainer"></div>
+  <script type="module" src="script.js"></script>
 </body>
 
 </html>
