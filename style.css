@@ -7,7 +7,7 @@ body {
   flex-direction: column;
   align-items: center;
   /* overflow: hidden; */
-  transform-origin:top ;
+  transform-origin: top;
   /* transition: transform 0.5s ease-in-out; */
 }
 
@@ -157,13 +157,16 @@ button {
   cursor: pointer;
   transition: all 0.2s ease-in-out;
 }
+
 button:hover {
   background: #0056b3;
 }
+
 button:active {
   transform: scale(0.95);
 }
-.header.continer{
+
+.header.continer {
   display: flex;
   vertical-align: center;
   gap: 12px;
@@ -174,6 +177,7 @@ button:active {
   box-sizing: border-box;
   width: 100%;
 }
+
 label {
   margin-right: 3px;
   font-size: 0.8rem;
@@ -196,16 +200,19 @@ label {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
 }
+
 .custom-select:hover {
   background-color: #ffffff;
   border-color: #357ABD;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
 }
+
 .custom-select:focus {
   outline: none;
   border-color: #1C6EA4;
   box-shadow: 0 0 0 3px rgba(70, 130, 180, 0.4);
 }
+
 .custom-select::after {
   content: "▼";
   position: absolute;
@@ -214,6 +221,7 @@ label {
   font-size: 1rem;
   color: #357ABD;
 }
+
 .selector-container {
   display: flex;
   align-items: center;
@@ -283,7 +291,7 @@ label {
   margin: 0;
 }
 
-hr{
+hr {
   margin: 1px;
 }
 
@@ -316,7 +324,7 @@ hr{
   /* width: 4em; */
   /* height: 15 em;*/
   height: 15vw;
-  min-height: 100px; 
+  min-height: 100px;
   background-color: #ffffff;
   border-radius: 0 0 0.3em 0.3em;
   border: 0.06vw solid #24272e;
@@ -340,7 +348,7 @@ hr{
 
 
 .scale-marker {
-  position:relative;
+  position: relative;
   top: 70%;
   left: 50%;
   width: 2.8vw;
@@ -351,7 +359,8 @@ hr{
   background-color: #FBBF00;
   border-radius: 50%;
   transform: translateX(-50%);
-  display: none; /* 初期状態は非表示 */
+  display: none;
+  /* 初期状態は非表示 */
   text-align: center;
   color: white;
 }
@@ -359,9 +368,11 @@ hr{
 .key.scale-highlight .scale-marker {
   display: block;
 }
-.key.black-key .scale-marker{
+
+.key.black-key .scale-marker {
   top: 60%;
 }
+
 .key.tonic-note .scale-marker {
   background-color: red;
 }
@@ -369,15 +380,16 @@ hr{
 .chord-highlight {
   background-color: #b0cdff;
 }
-.key.root-note{
+
+.key.root-note {
   background-color: #005eff;
 }
 
 .active {
   box-shadow:
-      inset 0 0 30px #ffe26c,
-      0 0 10px #ffe26c,
-      0 0 10px #ffe26c;
+    inset 0 0 30px #ffe26c,
+    0 0 10px #ffe26c,
+    0 0 10px #ffe26c;
 }
 
 
@@ -386,33 +398,41 @@ hr{
   display: flex;
   /* gap: 1em; */
 }
+
 .chord-buttons-wrapper {
   display: block;
 }
+
 .chord-wrapper {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.5rem; /* 各グループの間隔 */
+  gap: 0.5rem;
+  /* 各グループの間隔 */
   margin-top: 20px;
   margin-bottom: 10px;
 }
+
 .chord-group {
   display: flex;
-  align-items: center;  /* ラベルとボタンを横並び＆中央寄せ */
+  align-items: center;
+  /* ラベルとボタンを横並び＆中央寄せ */
 }
+
 .chord-label {
   font-size: 0.8rem;
   text-align: right;
   margin-left: 2vw;
   line-height: 1.0;
 }
+
 .chord-buttons {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   /* gap: 3vm; */
 }
+
 .chord-buttons button {
   width: 10vw;
   height: 5vw;
@@ -428,16 +448,40 @@ hr{
   transition: all 0.2s ease-in-out;
   display: flex;
   align-items: center;
-  justify-content: center; 
+  justify-content: center;
 }
-.chord-buttons.diatonic button.tonic{background-color: #49B656;}
-.chord-buttons.diatonic button.dominant {background-color: #F15031;}
-.chord-buttons.diatonic button.subdominant {background-color: #F1AB32;}
-.chord-buttons.diatonic button.diminish {background-color: #5A189A;}
-.chord-buttons.parallel-minor button.tonic{background-color: #36653C;}
-.chord-buttons.parallel-minor button.dominant {background-color: #903324;}
-.chord-buttons.parallel-minor button.subdominant {background-color: #CD9534;}
-.chord-buttons.parallel-minor button.diminish {background-color: #5A189A;}
+
+.chord-buttons.diatonic button.tonic {
+  background-color: #49B656;
+}
+
+.chord-buttons.diatonic button.dominant {
+  background-color: #F15031;
+}
+
+.chord-buttons.diatonic button.subdominant {
+  background-color: #F1AB32;
+}
+
+.chord-buttons.diatonic button.diminish {
+  background-color: #5A189A;
+}
+
+.chord-buttons.parallel-minor button.tonic {
+  background-color: #36653C;
+}
+
+.chord-buttons.parallel-minor button.dominant {
+  background-color: #903324;
+}
+
+.chord-buttons.parallel-minor button.subdominant {
+  background-color: #CD9534;
+}
+
+.chord-buttons.parallel-minor button.diminish {
+  background-color: #5A189A;
+}
 
 
 .chord-buttons button:hover {
@@ -446,6 +490,7 @@ hr{
   opacity: 0.8;
   transform: scale(1.1);
 }
+
 .chord-buttons button.active {
   font-weight: bold;
   box-shadow: 0px 0px 0.7em black;
@@ -515,11 +560,11 @@ hr{
   .header-controls {
     gap: 10px;
   }
-  
+
   .header-group {
     gap: 4px;
   }
-  
+
   #addPianoButton {
     padding: 4px 8px;
   }

@@ -56,7 +56,7 @@ export class PianoUI {
   setupPitchShiftControls() {
     const pitchShiftValueEle = document.querySelector("#pitchShift-value");
     pitchShiftValueEle.innerText = this.pitchShiftValue;
-    
+
     document.querySelectorAll("button.pitchShift").forEach(button => {
       button.addEventListener("click", () => {
         if (button.classList.contains("up")) {
@@ -90,7 +90,7 @@ export class PianoUI {
     const blackKeyWidth = whiteKeyWidth * 0.6;
     const blackKeyWidthhalf = blackKeyWidth / 2;
     const GapOfBlackKey = whiteKeyWidth / 20;
-    const firstNotePitchNumber = this.numberOfKeys <= 13 ? 4+this.pitchShiftValue : this.numberOfKeys <= 49 ? 3+this.pitchShiftValue : this.numberOfKeys <= 61 ? 2+this.pitchShiftValue : 1+this.pitchShiftValue;
+    const firstNotePitchNumber = this.numberOfKeys <= 13 ? 4 + this.pitchShiftValue : this.numberOfKeys <= 49 ? 3 + this.pitchShiftValue : this.numberOfKeys <= 61 ? 2 + this.pitchShiftValue : 1 + this.pitchShiftValue;
     const firstNotePitch = `C${firstNotePitchNumber}`;
     const firstNoteMidiNumber = this.noteToMidi(firstNotePitch);
     let whiteKeyCount = 0;
@@ -215,8 +215,8 @@ export class PianoUI {
     pianoInstance.classList.add("piano-instance");
     pianoInstance.id = `pianoInstance-${pianoId}`;
 
-    if(pianoId !== 1) {
-    pianoInstance.appendChild(document.createElement("hr"));
+    if (pianoId !== 1) {
+      pianoInstance.appendChild(document.createElement("hr"));
     }
     // スケールセレクターの追加
     const scaleSelector = this.createScaleSelector(pianoId);
@@ -306,7 +306,7 @@ export class PianoUI {
 
   getScaleNotes(startNote) {
     const startIndex = NOTE_CHAR_LIST.indexOf(startNote);
-    return startIndex === -1 ? [] : 
+    return startIndex === -1 ? [] :
       MAJOR_SCALE_NOTE_LIST.map(i => NOTE_CHAR_LIST[(startIndex + i) % NOTE_CHAR_LIST.length]);
   }
 
@@ -317,7 +317,7 @@ export class PianoUI {
         const pianoDiv = event.target.closest("div[id^='pianoInstance-']");
         const pianoId = parseInt(pianoDiv.id.replace("pianoInstance-", ""));
         const pianoIndex = pianoId - 1;
-        
+
         if (this.pianos[pianoIndex]) {
           this.pianos[pianoIndex].scale = selectedKey;
           this.pianos[pianoIndex].scaleNotes = this.getScaleNotes(selectedKey);

@@ -6,16 +6,16 @@ export class AudioManager {
     this.masterGainNode = this.audioContext.createGain();
     this.masterGainNode.gain.value = 0.3;
     this.masterGainNode.connect(this.audioContext.destination);
-    
+
     this.audioBuffers = {};
     this.activeSources = {};
     this.gainNodes = {};
-    
+
     this.initializeAudio();
   }
 
   initializeAudio() {
-    NOTE_CHAR_LIST.forEach(note => 
+    NOTE_CHAR_LIST.forEach(note =>
       Array.from({ length: 6 }, (_, i) => this.loadAudio(`${note}${i + 1}`))
     );
   }
@@ -37,11 +37,11 @@ export class AudioManager {
 
     const source = this.audioContext.createBufferSource();
     const gainNode = this.audioContext.createGain();
-    
+
     source.buffer = this.audioBuffers[notePitch];
     source.connect(gainNode);
     gainNode.connect(this.masterGainNode);
-    
+
     source.start(0);
     this.activeSources[notePitch] = source;
     this.gainNodes[notePitch] = gainNode;

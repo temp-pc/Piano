@@ -9,15 +9,27 @@
 </head>
 
 <body>
-  <button id="midiButton">MIDIを接続</button>
-  <button id="addPianoButton">ピアノを追加</button>
-  <div class="selectors-wrapper">
-    <div class="selector-container">
-      <label for="numberOfKeysSelector" class="selector-label">鍵盤数:</label>
-      <select name="numberOfKeysSelector" id="numberOfKeysSelector" class="custom-select"></select>
-    </div>
-
-    <div>
+  <button class="header-toggle"></button>
+  <div id="headerContainer">
+    <div class="header-controls">
+      <div class="header-group">
+        <label for="numberOfKeysSelector">鍵盤数</label>
+        <select id="numberOfKeysSelector" class="numberOfKeysSelector custom-select"></select>
+      </div>
+      <div class="header-group">
+        <label for="volumeControl">音量</label>
+        <input type="range" id="volumeControl" class="volume-control">
+      </div>
+      <div class="header-group">
+        <label>ピッチシフト</label>
+        <div id="pitchShiftWrapper">
+          <div id="pitchShifter">
+            <button class="pitchShift down">-</button>
+            <span id="pitchShift-value">0</span>
+            <button class="pitchShift up">+</button>
+          </div>
+        </div>
+      </div>
       <button id="addPianoButton">ピアノを追加</button>
     </div>
   </div>
