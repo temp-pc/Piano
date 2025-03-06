@@ -9,22 +9,29 @@
 </head>
 
 <body>
-  <div class="controls">
-    <div class="control-group">
-      <label for="numberOfKeysSelector">鍵盤数:</label>
-      <select id="numberOfKeysSelector"></select>
+  <button class="header-toggle"></button>
+  <div id="headerContainer">
+    <div class="header-controls">
+      <div class="header-group">
+        <label for="numberOfKeysSelector">鍵盤数</label>
+        <select id="numberOfKeysSelector" class="numberOfKeysSelector custom-select"></select>
+      </div>
+      <div class="header-group">
+        <label for="volumeControl">音量</label>
+        <input type="range" id="volumeControl" class="volume-control">
+      </div>
+      <div class="header-group">
+        <label>ピッチシフト</label>
+        <div id="pitchShiftWrapper">
+          <div id="pitchShifter">
+            <button class="pitchShift down">-</button>
+            <span id="pitchShift-value">0</span>
+            <button class="pitchShift up">+</button>
+          </div>
+        </div>
+      </div>
+      <button id="addPianoButton">ピアノを追加</button>
     </div>
-    <div class="control-group">
-      <label for="volumeControl">音量:</label>
-      <input type="range" id="volumeControl" min="0" max="1" step="0.01" value="0.3">
-    </div>
-    <div class="control-group">
-      <label>ピッチシフト:</label>
-      <button class="pitchShift down">↓</button>
-      <span id="pitchShift-value">0</span>
-      <button class="pitchShift up">↑</button>
-    </div>
-    <button id="addPianoButton">ピアノを追加</button>
   </div>
   <div id="mainContainer"></div>
   <script type="module" src="script.js"></script>

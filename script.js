@@ -81,4 +81,15 @@ function getDistance(touches) {
   const dx = touches[0].clientX - touches[1].clientX;
   const dy = touches[0].clientY - touches[1].clientY;
   return Math.sqrt(dx * dx + dy * dy);
-} 
+}
+
+// ヘッダーの表示/非表示トグル
+const headerToggle = document.querySelector('.header-toggle');
+const headerContainer = document.querySelector('#headerContainer');
+const mainContainer = document.querySelector('#mainContainer');
+
+headerToggle.addEventListener('click', () => {
+  const isHidden = headerContainer.classList.toggle('hidden');
+  headerToggle.classList.toggle('hidden');
+  mainContainer.classList.toggle('header-hidden');
+}); 

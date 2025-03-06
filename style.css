@@ -13,11 +13,137 @@ body {
 
 
 #headerContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
   width: 100%;
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
+  justify-content: flex-end;
+  gap: 20px;
+  padding: 12px 24px;
+  background-color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  transition: transform 0.3s ease-in-out;
+  box-sizing: border-box;
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  max-width: 100%;
+}
+
+.header-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  flex-shrink: 0;
+}
+
+#volumeControl {
+  position: static;
+  width: 100px;
+}
+
+#pitchShiftWrapper {
+  width: auto;
+}
+
+#pitchShifter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pitchShift {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  border-radius: 4px;
+}
+
+#pitchShift-value {
+  min-width: 24px;
+  text-align: center;
+}
+
+.numberOfKeysSelector {
+  margin: 0;
+}
+
+/* ヘッダーが固定されるため、メインコンテンツに上部マージンを追加 */
+#mainContainer {
+  margin-top: 60px;
+  transition: margin-top 0.3s ease-in-out;
+}
+
+#mainContainer.header-hidden {
+  margin-top: 0;
+}
+
+/* ヘッダーの表示/非表示トグルボタン */
+.header-toggle {
+  position: fixed;
+  top: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 24px;
+  height: 12px;
+  background: none !important;
+  border: none;
+  cursor: pointer;
+  z-index: 1001;
+  transition: all 0.3s ease-in-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.6;
+  padding: 0;
+  margin: 0;
+  border-radius: 0;
+}
+
+.header-toggle::before {
+  content: '';
+  width: 0;
+  height: 0;
+  border-left: 12px solid transparent;
+  border-right: 12px solid transparent;
+  border-top: 12px solid #666;
+  transition: all 0.3s ease-in-out;
+}
+
+.header-toggle:hover {
+  opacity: 1;
+  background: none !important;
+  transform: translateX(-50%);
+}
+
+/* ヘッダーが非表示の時のトグルボタン */
+.header-toggle.hidden {
+  transform: translateX(-50%) rotate(180deg);
+  top: 12px;
+}
+
+.header-toggle.hidden:hover {
+  transform: translateX(-50%) rotate(180deg);
+}
+
+/* ヘッダーが非表示の時のスタイル */
+#headerContainer.hidden {
+  transform: translateY(-100%);
 }
 
 button {
@@ -56,23 +182,6 @@ label {
   width: 100%;
   text-align: right;
 }
-#volumeControl{
-  position: absolute;
-  top: 10px;
-  left: 90px;
-}
-#pitchShiftWrapper{
-  width:50%;
-}
-#pitchShifter{
-  display: flex;
-}
-.pitchShift{
-  font-size: 12px;
-  text-align: center;
-}
-
-
 
 .custom-select {
   appearance: none;
@@ -105,16 +214,13 @@ label {
   font-size: 1rem;
   color: #357ABD;
 }
-.numberOfKeysSelector {
-  margin: 10px 40px 10px 10px;
-}
 .selector-container {
   display: flex;
-  justify-content: flex-end;
   align-items: center;
-  padding: 10px;
+  gap: 10px;
   margin-bottom: 10px;
-  width: 100%;
+  justify-content: flex-end;
+  padding-right: 20px;
 }
 
 .selector-label {
@@ -362,3 +468,59 @@ hr{
     font-size: 0.3em;
   }
 } */
+
+.highlight-toggle {
+  background: none;
+  border: 1px solid #ccc;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: none;
+}
+
+.highlight-toggle.active {
+  background-color: #4CAF50;
+  border-color: #4CAF50;
+  box-shadow: none;
+}
+
+.highlight-toggle .toggle-icon {
+  font-size: 1.4em;
+  color: #666;
+  line-height: 1;
+}
+
+.highlight-toggle.active .toggle-icon {
+  color: white;
+}
+
+.highlight-toggle:hover {
+  border-color: #4CAF50;
+  box-shadow: none;
+}
+
+#addPianoButton {
+  white-space: nowrap;
+  padding: 6px 12px;
+  font-size: 12px;
+  flex-shrink: 0;
+  margin: 0;
+}
+
+@media screen and (max-width: 768px) {
+  .header-controls {
+    gap: 10px;
+  }
+  
+  .header-group {
+    gap: 4px;
+  }
+  
+  #addPianoButton {
+    padding: 4px 8px;
+  }
+}

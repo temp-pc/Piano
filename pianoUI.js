@@ -198,7 +198,8 @@ export class PianoUI {
       scale: "C",
       scaleNotes: this.getScaleNotes("C"),
       chordDegree: null,
-      chordNotes: null
+      chordNotes: null,
+      showHighlight: true  // デフォルトでハイライトを表示
     };
     this.pianos.push(newPiano);
 
@@ -206,6 +207,7 @@ export class PianoUI {
     document.querySelector("#mainContainer").appendChild(pianoInstance);
     this.setKeySelection();
     this.setChordButton(pianoInstance);
+    this.highlightScaleAndChord(pianoId);  // 初期表示時にハイライトを適用
   }
 
   createPianoInstance(pianoId) {
@@ -239,8 +241,23 @@ export class PianoUI {
         <select id="scaleSelector-${pianoId}" class="scaleSelector custom-select">
           ${noteOrder.map(note => `<option value="${note}">${note}</option>`).join('')}
         </select>
+        <button id="highlightToggle-${pianoId}" class="highlight-toggle active">
+          <span class="toggle-icon">♪</span>
+        </button>
       </div>
     `;
+
+    // トグルボタンのイベントリスナーを追加
+    const toggleButton = scaleSelector.querySelector(`#highlightToggle-${pianoId}`);
+    toggleButton.addEventListener("click", () => {
+      toggleButton.classList.toggle("active");
+      const pianoIndex = pianoId - 1;
+      if (this.pianos[pianoIndex]) {
+        this.pianos[pianoIndex].showHighlight = toggleButton.classList.contains("active");
+        this.highlightScaleAndChord(pianoId);
+      }
+    });
+
     return scaleSelector;
   }
 
@@ -317,12 +334,13 @@ export class PianoUI {
     const scaleNotes = pianoInfo.scaleNotes || [];
     const chordDegree = pianoInfo.chordDegree;
     const chordNotes = pianoInfo.chordNotes || [];
+    const showHighlight = pianoInfo.showHighlight;
 
     document.querySelectorAll(`#pianoInstance-${pianoId} .key`).forEach((keyElem) => {
       const note = keyElem.getAttribute("pitch-class");
 
       // スケールのハイライト
-      if (scaleNotes.includes(note)) {
+      if (showHighlight && scaleNotes.includes(note)) {
         keyElem.classList.add("scale-highlight");
         keyElem.querySelector(".scale-marker").innerText = parseInt(scaleNotes.indexOf(note)) + 1;
       } else {
@@ -331,7 +349,7 @@ export class PianoUI {
       }
 
       // トニックノートのハイライト
-      if (note === scale) {
+      if (showHighlight && note === scale) {
         keyElem.classList.add("tonic-note");
       } else {
         keyElem.classList.remove("tonic-note");
