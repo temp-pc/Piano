@@ -12,8 +12,6 @@ body {
 }
 
 
-
-
 #headerContainer {
   width: 100%;
   display: flex;
@@ -39,18 +37,9 @@ button:hover {
 button:active {
   transform: scale(0.95);
 }
-#pitch-shift-wrapper{
-  width:50%;
+.header.continer{
   display: flex;
   vertical-align: center;
-}
-.pitch-shift{
-  font-size: 12px;
-  text-align: center;
-}
-
-.selector-container {
-  display: flex;
   gap: 12px;
   align-items: center;
   justify-content: flex-end;
@@ -59,7 +48,7 @@ button:active {
   box-sizing: border-box;
   width: 100%;
 }
-.selector-label {
+label {
   margin-right: 3px;
   font-size: 0.8rem;
   color: #333;
@@ -67,6 +56,24 @@ button:active {
   width: 100%;
   text-align: right;
 }
+#volumeControl{
+  position: absolute;
+  top: 10px;
+  left: 90px;
+}
+#pitchShiftWrapper{
+  width:50%;
+}
+#pitchShifter{
+  display: flex;
+}
+.pitchShift{
+  font-size: 12px;
+  text-align: center;
+}
+
+
+
 .custom-select {
   appearance: none;
   width: 60px;

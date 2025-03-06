@@ -1,8 +1,9 @@
+import { AudioManager } from './audioManager.js';
+import { PianoUI } from './pianoUI.js';
+
 const projectName = "Piano";
 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-const audioBuffers = {}; // 音声ファイルをキャッシュするためのオブジェクト
-const activeSources = {}; // 再生中の音を保持するオブジェクト
-const gainNodes = {}; // GainNode を管理するオブジェクト
+const masterGainNode = audioContext.createGain();
 
 const noteCharList = ["A", "As", "B", "C", "Cs", "D", "Ds", "E", "F", "Fs", "G", "Gs"];
 const baseNote = { "C": 0, "Cs": 1, "D": 2, "Ds": 3, "E": 4, "F": 5, "Fs": 6, "G": 7, "Gs": 8, "A": 9, "As": 10, "B": 11 };
@@ -52,32 +53,50 @@ document.querySelector("#addPianoButton").addEventListener("click", () => {
   addPiano();
 });
 
-const pitchShiftValueEle = document.querySelector("#pitch-shift-value");
+// masterGainNode.gain.setValueAtTime(0.3, audioContext.currentTime); // デフォルト音量を小さめに設定
+masterGainNode.gain.value = 0.3
+masterGainNode.connect(audioContext.destination);
+const audioBuffers = {}; // 音声ファイルをキャッシュするためのオブジェクト
+const volumeControl = document.querySelector("#volumeControl");
+volumeControl.type = "range";
+volumeControl.min = "0";
+volumeControl.max = "1";
+volumeControl.step = "0.01";
+volumeControl.value = masterGainNode.gain.value.toString();
+volumeControl.addEventListener("input", (event) => {
+  const volume = parseFloat(event.target.value);
+  masterGainNode.gain.setValueAtTime(volume, audioContext.currentTime);
+});
+let activeSources = {}; // 再生中の音を保持するオブジェクト
+let gainNodes = {}; // GainNode を管理するオブジェクト
+
+
+const pitchShiftValueEle = document.querySelector("#pitchShift-value");
 let pitchShiftValue = 0;
+let pitchShiftingNumber = 0;
 pitchShiftValueEle.innerText = pitchShiftValue;
-document.querySelectorAll("button.pitch-shift").forEach(button => {
+document.querySelectorAll("button.pitchShift").forEach(button => {
   button.addEventListener("click", () => {
     if (button.classList.contains("up")) {
       pitchShiftValue += 1;
       pitchShiftingNumber = 1;
     } else if (button.classList.contains("down")) {
       pitchShiftValue -= 1;
-      pitchShiftingNumber = -1
+      pitchShiftingNumber = -1;
     }
     pitchShiftValueEle.innerText = pitchShiftValue;
 
-    console.log("pitch shifted")
     document.querySelectorAll(".key").forEach(key => {
       const midiNumber = key.getAttribute("data-note");
-      const newMidiNumber = parseInt(midiNumber) + ( 12 * pitchShiftingNumber);
+      const newMidiNumber = parseInt(midiNumber) + (12 * pitchShiftingNumber);
       let pitchNote = key.id;
       const match = pitchNote.match(/^([A-Za-z]{1,2})(\d{1,2})$/);
-      const newPitchNote = `${match[1]}${parseInt(match[2], 10) + pitchShiftingNumber}`
+      const newPitchNote = `${match[1]}${parseInt(match[2], 10) + pitchShiftingNumber}`;
       key.setAttribute("data-note", newMidiNumber);
       key.id = newPitchNote;
-    })
-  })
-})
+    });
+  });
+});
 
 
 let pianos = [];
@@ -95,10 +114,6 @@ function getChordNotes(scale, chordType) {
   const NotesList = chordPatterns[chordType].map(index => noteCharList[(startIndex + index) % noteCharList.length]);
   return NotesList;
 }
-
-// let CURRENT_SCALE = document.querySelector("#scaleSelector").value;
-// let CURRENT_SCALE_NOTES = getScaleNotes(CURRENT_SCALE);
-// let CURRENT_CHORD_DEGREE = null;
 
 
 const audioFiles = "";
@@ -241,19 +256,15 @@ function midiToNote(midiNumber) {
 function createKeys() {
   const pianoBackground = document.createElement("div");
   pianoBackground.classList.add("piano-background");
-  // pianoBackground.innerHTML = ''; //初期化
-  const whiteKeyWidth = Math.min(8, 90 / (numberOfKeys / 12 * 7)); //単位はvw、画面の横幅の90%を、白鍵の数で割った値。最大値を8に設定。
-  // console.log("whiteKeyWidth : " + whiteKeyWidth + " containerWidth : " + containerWidth + " numberOfKeys : " + numberOfKeys);
+  const whiteKeyWidth = Math.min(8, 90 / (numberOfKeys / 12 * 7));
   const blackKeyWidth = whiteKeyWidth * 0.6;
   const blackKeyWidthhalf = blackKeyWidth / 2;
-  const GapOfBlackKey = whiteKeyWidth / 20; //黒鍵の位置を真ん中から少しずらす
+  const GapOfBlackKey = whiteKeyWidth / 20;
   const firstNotePitchNumber = numberOfKeys <= 13 ? 4+pitchShiftValue : numberOfKeys <= 49 ? 3+pitchShiftValue : numberOfKeys <= 61 ? 2+pitchShiftValue : 1+pitchShiftValue;
   const firstNotePitch = `C${firstNotePitchNumber}`;
   const firstNoteMidiNumber = noteToMidi(firstNotePitch);
   let whiteKeyCount = 0;
   let pianoBackgroundWidth = 0;
-
-  console.log(numberOfKeys)
 
   for (let num = 1; num <= numberOfKeys; num++) {
     const keyElem = document.createElement("div");
@@ -267,32 +278,24 @@ function createKeys() {
     keyElem.classList.add("key");
     keyElem.id = notePitch;
 
-    keyIndex = num % 12;
-
     if (noteChar.includes("s")) {
-
       keyElem.classList.add("black-key");
-      // div.style.width = `${blackKeyWidth}em`;
       keyElem.style.width = `${blackKeyWidth}vw`;
 
       let blackKeyPosition = whiteKeyWidth * whiteKeyCount - blackKeyWidthhalf;
 
-      // ギャップの調整
       if (noteChar === "Cs" || noteChar === "Fs") {
         blackKeyPosition -= GapOfBlackKey;
       } else if (noteChar === "Ds" || noteChar === "As") {
         blackKeyPosition += GapOfBlackKey;
       }
-      // div.style.left = `${blackKeyPosition}em`;
       keyElem.style.left = `${blackKeyPosition}vw`;
 
-      //黒鍵で終わってたら、その分piano-containerのサイズを大きくする
       if (num == 1 || num == numberOfKeys) {
         pianoBackgroundWidth += blackKeyWidth;
       }
     } else {
       keyElem.classList.add("white-key");
-      // div.style.width = `${whiteKeyWidth}em`;
       keyElem.style.width = `${whiteKeyWidth}vw`;
       whiteKeyCount += 1;
       pianoBackgroundWidth += whiteKeyWidth;
@@ -302,7 +305,6 @@ function createKeys() {
     marker.className = "scale-marker";
     keyElem.appendChild(marker);
 
-    // --- イベントリスナーを直接追加 ---
     keyElem.addEventListener('mousedown', () => {
       playNoteAudio(notePitch);
       keyElem.classList.add('active');
@@ -315,7 +317,6 @@ function createKeys() {
       stopNoteAudio(notePitch);
       keyElem.classList.remove('active');
     });
-    // タッチデバイス向け
     keyElem.addEventListener('touchstart', () => {
       playNoteAudio(notePitch);
       keyElem.classList.add('active');
@@ -326,12 +327,8 @@ function createKeys() {
     });
 
     pianoBackground.appendChild(keyElem);
-
   }
-  // pianoBackground.style.width = `${pianoBackgroundWidth}em`;
   pianoBackground.style.width = `${pianoBackgroundWidth}vw`;
-
-  // assignSoundsOnKeys();  //キーに音を割り当て
 
   const pianoContainer = document.createElement("div");
   pianoContainer.classList.add("pianoContainer");
@@ -349,10 +346,11 @@ function playNoteAudio(notePitch) {
   source.buffer = audioBuffers[notePitch];
 
   const gainNode = audioContext.createGain();
-  gainNode.gain.setValueAtTime(1, audioContext.currentTime); // 初期音量を1に設定
+  // gainNode.gain.setValueAtTime(1, audioContext.currentTime); // 初期音量を1に設定
+  gainNode.gain.value = 1;
 
   source.connect(gainNode);
-  gainNode.connect(audioContext.destination);
+  gainNode.connect(masterGainNode);
 
   source.start(); // 即座に再生
   activeSources[notePitch] = source; // 再生中の音を保存しておく
@@ -378,77 +376,44 @@ function stopNoteAudio(notePitch) {
     }, fadeOutTime * 1000);
   }
 }
-// function assignSoundsOnKeys() {
-//   // イベントリスナー内でplayNoteWithSoundを呼び出すように変更
-//   document.querySelectorAll('.key').forEach(key => {
-//     const noteMidiNumber = key.getAttribute('data-note');
-//     const notePitch = midiToNote(noteMidiNumber);
-//     key.addEventListener('mousedown', () => {
-//       playNoteAudio(notePitch);
-//       key.classList.add('active');
-//     });
-//     key.addEventListener('mouseup', () => {
-//       stopNoteAudio(notePitch);
-//       key.classList.remove('active');
-//     });
-//     key.addEventListener('mouseleave', () => {
-//       stopNoteAudio(notePitch);
-//       key.classList.remove('active');
-//     });
 
-//     // タッチデバイス向けのイベント
-//     key.addEventListener('touchstart', () => {
-//       playNoteAudio(notePitch);
-//       key.classList.add('active');
-//     });
-//     key.addEventListener('touchend', () => {
-//       stopNoteAudio(notePitch);
-//       key.classList.remove('active');
-//     });
+// アプリケーションの初期化
+const audioManager = new AudioManager();
+const pianoUI = new PianoUI(audioManager);
 
-//   });
-// }
-
-
+// MIDIデバイスのサポート
 if (navigator.requestMIDIAccess) {
   navigator.requestMIDIAccess()
-    .then(onMIDISuccess, onMIDIFailure);
-} else {
-  console.log("WebMIDI is not supported in this browser.");
+    .then(onMIDISuccess)
+    .catch(onMIDIFailure);
 }
 
-document.getElementById("midiButton").addEventListener("click", () => {
-  if (navigator.requestMIDIAccess) {
-    navigator.requestMIDIAccess()
-      .then(onMIDISuccess, onMIDIFailure);
-  } else {
-    console.log("WebMIDI is not supported in this browser.");
-  }
-});
 function onMIDISuccess(midiAccess) {
-  midiAccess.inputs.forEach(function (input) {
+  midiAccess.inputs.forEach(input => {
     input.onmidimessage = onMIDIMessage;
   });
 }
 
 function onMIDIFailure() {
-  console.log("Failed to access MIDI devices.");
+  console.log('MIDIデバイスへのアクセスに失敗しました');
 }
 
 function onMIDIMessage(message) {
-  const [status, note, velocity] = message.data;
-  const isNoteOn = (status & 0xf0) === 0x90;
-  const isNoteOff = (status & 0xf0) === 0x80 || (isNoteOn && velocity === 0);
-  const key = document.querySelector(`.key[data-note="${note}"]`);
+  const [command, note, velocity] = message.data;
+  const notePitch = pianoUI.midiToNote(note);
 
-  const notePitchSymbol = midiToNote(note);
-
-  if (isNoteOn) {
-    key.classList.add('active');
-    playNoteAudio(notePitchSymbol);
-  } else if (isNoteOff) {
-    key.classList.remove('active');
-    stopNoteAudio(notePitchSymbol);
+  if (command === 144 && velocity > 0) { // Note On
+    audioManager.playNote(notePitch);
+    const key = document.querySelector(`.key[id="${notePitch}"]`);
+    if (key) {
+      key.classList.add('active');
+    }
+  } else if (command === 128 || (command === 144 && velocity === 0)) { // Note Off
+    audioManager.stopNote(notePitch);
+    const key = document.querySelector(`.key[id="${notePitch}"]`);
+    if (key) {
+      key.classList.remove('active');
+    }
   }
 }
 
@@ -543,10 +508,10 @@ function setChordButton(pianoInstance) {
 document.addEventListener("wheel", (event) => {
   if (event.ctrlKey) { // Ctrlキーが押されている時のみズーム
     event.preventDefault();
-    const mainContent = document.querySelector("body"); // ズーム対象
+    const mainContent = document.querySelector("body");
     let scale = Number(mainContent.dataset.scale || 1);
-    scale += event.deltaY * -0.001; // スクロール量に応じて拡大・縮小
-    scale = Math.min(Math.max(0.5, scale), 2); // 0.5〜2倍に制限
+    scale += event.deltaY * -0.001;
+    scale = Math.min(Math.max(0.5, scale), 2);
     mainContent.style.transform = `scale(${scale})`;
     mainContent.dataset.scale = scale;
   }
@@ -555,14 +520,14 @@ let touchStartDistance = 0;
 let scale = 1;
 
 document.addEventListener("touchstart", (event) => {
-  if (event.touches.length === 2) { // 2本指でのタッチ
+  if (event.touches.length === 2) {
     event.preventDefault();
     touchStartDistance = getDistance(event.touches);
   }
 });
 
 document.addEventListener("touchmove", (event) => {
-  if (event.touches.length === 2) { // 2本指での移動
+  if (event.touches.length === 2) {
     event.preventDefault();
     const newDistance = getDistance(event.touches);
     const zoomFactor = newDistance / touchStartDistance;
