@@ -215,8 +215,9 @@ export class PianoUI {
     pianoInstance.classList.add("piano-instance");
     pianoInstance.id = `pianoInstance-${pianoId}`;
 
+    if(pianoId !== 1) {
     pianoInstance.appendChild(document.createElement("hr"));
-
+    }
     // スケールセレクターの追加
     const scaleSelector = this.createScaleSelector(pianoId);
     pianoInstance.appendChild(scaleSelector);
